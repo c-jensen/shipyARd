@@ -23,3 +23,5 @@ Anleitung:
 		
 		Extended Tracking: https://developer.vuforia.com/library/articles/Training/Extended-Tracking
 			Implementation: https://developer.vuforia.com/library/articles/Solution/How-To-implement-Extended-Tracking
+			
+		Unity UI Tutorial: https://unity3d.com/learn/tutorials/projects/survival-shooter/health-hud
