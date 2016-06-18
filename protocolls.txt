@@ -1,0 +1,145 @@
+﻿* * * 18.06.2016 * * *
+
+	HACKNIGHT !
+
+* * * 03.06.2016 * * *
+
+	Next Steps:
+	- Beide:
+		- Brainstorming und STAR research
+		- HUD mit 2 Pfeilen zum Rotieren des Teapots zu Ende
+	
+
+	- Heute
+		- HUD mit 2 Pfeilen zum Rotieren des Teapots begonnen
+
+	Bisher bei PARC:
+	
+	- Paper:
+		- Kein Vergleich von Tracking-Verfahren sinnvoll
+		- Sind bei Thema sehr frei
+		- TODO: Brainstorming und STAR research	
+	
+	- Jan:
+		- Objekt Tracker ist erstmal hinfällig -> abhängig von Paper Idee
+	
+
+* * * 27.05.2016 * * *
+
+	Next Steps:
+	- Beide: 
+		- Nochmal Suche nach (aktuelleren) Papern
+		- HUD mit 2 Pfeilen zum Rotieren des Teapots
+	- Jan:
+		- Objekt Tracker (einzeln) testen und zum laufen bekommen
+	- Chris: 
+		- Alles auf dem Laptop nochmal installieren
+	
+	Heute:
+	- Einrichten Projekt bei Chris
+	- Beide Tracker rendern die gleiche Szene
+
+	Bisher bei PARC:
+	
+	- APP in Unity mit Image Based Tracking und Natural Tracking bei Start auswählbar
+	
+	- ARToolKit dismissed
+		- Keine richtigen Natural Features
+		- Sehr schwer eigene Marker hinzuzufügen
+		- Unity Version klappt nur mit Unity Pro
+		- Markertracker war nicht stabil
+
+
+* * * 17.05.2016 * * *
+
+	Next Steps:
+	- Beide: Nochmal Suche nach (aktuelleren) Papern
+	- Jan:
+		- Hochladen der bisherigen Paper in die gemeinsame Dropbox
+		- APP in Unity mit Image Based Tracking und Natural Tracking bei Start auswählbar
+		- Objekt Tracker (einzeln) testen und zum laufen bekommen 	
+
+	- Chris:
+		- ARToolKit und OSG testen
+
+	Heute:
+	- Neue Zielsetzung ausgearbeitet:
+		1.) Aufsetzen einer Beispielanwendung
+			- Eventuell Unity, Vuforia, Bluetooth / WiFi p2p 
+			- Oder OSG, ARToolKit, Bluetooth / WiFi p2p
+			- Implementation eines Beispielgames (Pong? Vorteil: Jeder kennt es, Klassiker)
+		2.) Usertest
+			- Paarweise User spielen das Spiel (mehrere male?) (n ~ 10)
+			- Danach Fragebogen (3. Teile)
+				- 1. Cooperative Stuff
+					- sync trotz AR Tracking in Echtzeit möglich?
+					- Verbindungsabbrüche vorhanden?
+				- 2. AR Stuff
+					- Vergleich verschiedene Tracker (Marker, Natural, Objekt)
+					- Spielspaß ankreuzen pro Tracker-Typ von 1-5
+					- Wie genau war die Pose pro Tracker-Typ von 1-5
+					- Pose verloren?
+					- Bei ankreuzen	immer noch Feld für offene Anmerkungen
+				- 3. Spiel
+					- Welche Spiele könnte sich der User vorstellen (Genres?)
+					- Wie war das Spiel Pong selbst? Verbesserungen?
+					- Spielprinzip
+
+	Bisher bei PARC:
+		
+	- Neue Zielsetzung: mehr Forschungscharakter, weniger Framework
+	- Paper gelesen (Wir sollten die Paper in der Dropbox speichern)
+
+
+
+* * * 06.05.2016 * * *
+
+	Next Steps:
+	- Wifi Peer-to-peer: Groupowner kann auch an Client senden (Chris)
+	- Eine APP in Unity in der zwischen Image Based Tracking und Natural Tracking bei Start gewählt werden kann
+	
+	Heute:
+	- Prototyp Wifi Peer-to-peer in erster Version
+		- Client kann an Groupowner senden
+		
+	- Prototypen AR Tracking Unity & Vuforia
+		- Image Based Tracking + Extended Tracking
+		- Natural Tracking + Extended Tracking
+
+	Bisher bei PARC:
+		
+	- Prototyp Wifi Peer-to-peer ready for Testing (Chris)
+	- Unity und Vuforia installiert
+
+* * * 26.04.2016 * * *
+
+	Next Steps:
+	- Prototyp Wifi Peer-to-peer Test beenden und dann nächste Woche Testen
+	- Projekt aufsetzen mit Vuforia in Unity (Jan)
+
+	Heute:
+	- Start Prototyp WIFI Peer-to-peer test
+	- Start Project Setup Vuforia
+	
+	Bisher bei PARC:
+	
+	- Recherche über Netzwerk Techniken vollständig
+	- Recherche über AR Frameworks hat ergeben, erst Vuforia mit Unity zu testen
+		- Vor und Nachteile müssen noch gesammelt und in GitHub geschrieben werden (jan)
+
+
+* * * 19.04.2016 * * *
+
+  - 1. Meeting mit Kathi
+    - State of the Art einbringen in Arbeit (AR Frameworks und Tracking + Cooperative Work)
+    - Unity Game engine für rendering benutzen? - oder andere Engine (auf jeden Fall nicht selbst rendering from scratch)
+    - anderes Tracking als Marker Tracking (Image based - natural features)
+    - Network Management kann Kathi nicht viel helfen
+    - Überlegen, wer die Zielgruppe ist
+    - Forschungsaspekt einbringen
+    - In Arbeit begründen, warum Wahl der Techniken erfolgt ist (Network + AR Framework)
+    - Alles soll Modular gehalten werden - andere Verbindungstechnik, anderes Framework, anderer Tracker
+    - Evaluation in Arbeit einbringen
+  
+  - nächstes Treffen mit Kathi 17.05. 10:00
+    
