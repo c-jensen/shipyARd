@@ -22,6 +22,12 @@ public class RandomMatchMaker : Photon.PunBehaviour
         PhotonNetwork.JoinRandomRoom();
     }
 
+    public override void OnJoinedRoom()
+    {
+        GameObject sharedCube = PhotonNetwork.Instantiate("SharedCube", Vector3.zero, Quaternion.identity, 0);
+        sharedCube.transform.parent = GameObject.Find("p1_target").transform;
+    }
+
     void OnPhotonRandomJoinFailed()
     {
         Debug.Log("Can't join random room!");
