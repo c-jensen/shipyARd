@@ -1,24 +1,31 @@
+GOALS:
+
+	REAL LIFE GAMING mit AR Elementen
+		Vorteile: Viel weniger / gar keine Vorbereitung (nur Marker drucken)
+		Verschiedene Spiele spontan spielbar (nur App herunterladen)
+		Abwechslungsreicher, da Marker viel flexibler einsetzbar sind als z.B. Real Life Gaming KostÃ¼me
+
 Spiel the Ship wird in AR nachgebaut
 
-- Jeder Mitspieler hat Marker mit Sicherheitsnadel am Tshirt und repräsentiert eine der Rollen / Passagiere
+- Jeder Mitspieler hat Marker mit Sicherheitsnadel am Tshirt und reprï¿½sentiert eine der Rollen / Passagiere
 - Jede Runde werden die Rollen / Passagiere neu verteilt und man muss Marker erst scannen um festzustellen ob target oder nicht
-	-> Spieler kann überlegen, ob er direkt angreift oder erst mal so tut und weiter geht
-	
-- Mögliche Erweiterung (GPS? Future Work?)
+	-> Spieler kann ï¿½berlegen, ob er direkt angreift oder erst mal so tut und weiter geht
+
+- Mï¿½gliche Erweiterung (GPS? Future Work?)
 	- no kill zones
 	- security
 	- In GUI wird angezeigt ob gerade unter Beobachtung oder nicht
 
-- auf Marker wird Model des Passagiers / der Rolle gerendert (3D Model oder für erste Version 2D Bild)
+- auf Marker wird Model des Passagiers / der Rolle gerendert (3D Model oder fï¿½r erste Version 2D Bild)
 - Waffen sollten auch als 3D Model gerendert werden
-	
-- Man kann Waffen einsammeln (Marker die in der Gegend hängen - Marker sind dann für diese Runde aufgebraucht - Waffen können also nur einmal eingesammelt werden)
-- Um sein Ziel ausuzschalten, dessen Marker anvisieren und Angriff Button drücken - je nach Waffe mehr oder weniger schaden
-- Server verteilt Info über Ziele der Runde also wen man tot und wer lebt und tot ist
+
+- Man kann Waffen einsammeln (Marker die in der Gegend hï¿½ngen - Marker sind dann fï¿½r diese Runde aufgebraucht - Waffen kï¿½nnen also nur einmal eingesammelt werden)
+- Um sein Ziel ausuzschalten, dessen Marker anvisieren und Angriff Button drï¿½cken - je nach Waffe mehr oder weniger schaden
+- Server verteilt Info ï¿½ber Ziele der Runde also wen man tot und wer lebt und tot ist
 - Alle infos auf GUI: Ziel, Waffe, Leben, Punkte
 
 - Besondere Waffen geben mehr Punkte (Waffe der Runde - Achievements etc..)
 
 - Man muss die Waffe erst ziehen, der andere bekommt das angezeigt auf der GUI
 
-- Es gibt auch Punkte, wenn man denjenigen tötet, der einen selbst als Ziel hat
+- Es gibt auch Punkte, wenn man denjenigen tï¿½tet, der einen selbst als Ziel hat

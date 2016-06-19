@@ -1,6 +1,17 @@
-﻿* * * 18.06.2016 * * *
+﻿* * * 18/19.06.2016 * * *
 
-	HACKNIGHT !
+	HACKNIGHT
+
+		SA 19:
+
+		FR 18:
+			Rahmengerüst Shipyard Integration Unity + Vuforia + Photon
+				Start Menu + Rendering Scene + including HUD Scene
+				Photon Test App -> Basic Tutorial ausprobiert
+					Photon gibt eine App ID, die spezifisch für die App ist
+					Alle (aktiven) Nutzer der App haben die App ID auf ihrem Gerät und
+					können darüber auf den Photon Servern verbunden werden
+
 
 * * * 03.06.2016 * * *
 
@@ -8,41 +19,41 @@
 	- Beide:
 		- Brainstorming und STAR research
 		- HUD mit 2 Pfeilen zum Rotieren des Teapots zu Ende
-	
+
 
 	- Heute
 		- HUD mit 2 Pfeilen zum Rotieren des Teapots begonnen
 
 	Bisher bei PARC:
-	
+
 	- Paper:
 		- Kein Vergleich von Tracking-Verfahren sinnvoll
 		- Sind bei Thema sehr frei
-		- TODO: Brainstorming und STAR research	
-	
+		- TODO: Brainstorming und STAR research
+
 	- Jan:
 		- Objekt Tracker ist erstmal hinfällig -> abhängig von Paper Idee
-	
+
 
 * * * 27.05.2016 * * *
 
 	Next Steps:
-	- Beide: 
+	- Beide:
 		- Nochmal Suche nach (aktuelleren) Papern
 		- HUD mit 2 Pfeilen zum Rotieren des Teapots
 	- Jan:
 		- Objekt Tracker (einzeln) testen und zum laufen bekommen
-	- Chris: 
+	- Chris:
 		- Alles auf dem Laptop nochmal installieren
-	
+
 	Heute:
 	- Einrichten Projekt bei Chris
 	- Beide Tracker rendern die gleiche Szene
 
 	Bisher bei PARC:
-	
+
 	- APP in Unity mit Image Based Tracking und Natural Tracking bei Start auswählbar
-	
+
 	- ARToolKit dismissed
 		- Keine richtigen Natural Features
 		- Sehr schwer eigene Marker hinzuzufügen
@@ -57,7 +68,7 @@
 	- Jan:
 		- Hochladen der bisherigen Paper in die gemeinsame Dropbox
 		- APP in Unity mit Image Based Tracking und Natural Tracking bei Start auswählbar
-		- Objekt Tracker (einzeln) testen und zum laufen bekommen 	
+		- Objekt Tracker (einzeln) testen und zum laufen bekommen
 
 	- Chris:
 		- ARToolKit und OSG testen
@@ -65,7 +76,7 @@
 	Heute:
 	- Neue Zielsetzung ausgearbeitet:
 		1.) Aufsetzen einer Beispielanwendung
-			- Eventuell Unity, Vuforia, Bluetooth / WiFi p2p 
+			- Eventuell Unity, Vuforia, Bluetooth / WiFi p2p
 			- Oder OSG, ARToolKit, Bluetooth / WiFi p2p
 			- Implementation eines Beispielgames (Pong? Vorteil: Jeder kennt es, Klassiker)
 		2.) Usertest
@@ -86,7 +97,7 @@
 					- Spielprinzip
 
 	Bisher bei PARC:
-		
+
 	- Neue Zielsetzung: mehr Forschungscharakter, weniger Framework
 	- Paper gelesen (Wir sollten die Paper in der Dropbox speichern)
 
@@ -97,17 +108,17 @@
 	Next Steps:
 	- Wifi Peer-to-peer: Groupowner kann auch an Client senden (Chris)
 	- Eine APP in Unity in der zwischen Image Based Tracking und Natural Tracking bei Start gewählt werden kann
-	
+
 	Heute:
 	- Prototyp Wifi Peer-to-peer in erster Version
 		- Client kann an Groupowner senden
-		
+
 	- Prototypen AR Tracking Unity & Vuforia
 		- Image Based Tracking + Extended Tracking
 		- Natural Tracking + Extended Tracking
 
 	Bisher bei PARC:
-		
+
 	- Prototyp Wifi Peer-to-peer ready for Testing (Chris)
 	- Unity und Vuforia installiert
 
@@ -120,9 +131,9 @@
 	Heute:
 	- Start Prototyp WIFI Peer-to-peer test
 	- Start Project Setup Vuforia
-	
+
 	Bisher bei PARC:
-	
+
 	- Recherche über Netzwerk Techniken vollständig
 	- Recherche über AR Frameworks hat ergeben, erst Vuforia mit Unity zu testen
 		- Vor und Nachteile müssen noch gesammelt und in GitHub geschrieben werden (jan)
@@ -140,6 +151,5 @@
     - In Arbeit begründen, warum Wahl der Techniken erfolgt ist (Network + AR Framework)
     - Alles soll Modular gehalten werden - andere Verbindungstechnik, anderes Framework, anderer Tracker
     - Evaluation in Arbeit einbringen
-  
+
   - nächstes Treffen mit Kathi 17.05. 10:00
-    
