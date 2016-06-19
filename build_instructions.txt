@@ -18,6 +18,10 @@ Anleitung:
 				Beim ersten Start kann es nötig sein, den root-Ordner des Android sdks auszuwählen. In der regel ist das der Ordner "sdk" im Ordner "Android"
 					
 			Tutorial: https://www.youtube.com/watch?v=tFyN4AlYN6w
+
+
+		Installation Unity Photon Networking: https://www.photonengine.com/en/PUN
+			Download -> start in Unity Editor. Web browser opens -> click download and register account
 			
 		Vuforia User Defined Targets Tut: https://www.youtube.com/watch?v=VPbyh_TcDAY
 		
