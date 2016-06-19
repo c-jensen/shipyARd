@@ -3,10 +3,14 @@
 	HACKNIGHT
 
 		SA 19:
+			Server connect der laufenden App Instanzen
+			Basic Networking Test
+				Jeder Spieler erhält eigenen SharedCube auf Marker p1 und kann ihn rotieren
+				Alle Spieler sehen die Rotation der Cubes der anderen Spieler
 
 		FR 18:
 			Rahmengerüst Shipyard Integration Unity + Vuforia + Photon
-				Start Menu + Rendering Scene + including HUD Scene
+				Start Menu + Rendering Scene + including HUD Scene + Game Scene mit Script für Networking
 				Photon Test App -> Basic Tutorial ausprobiert
 					Photon gibt eine App ID, die spezifisch für die App ist
 					Alle (aktiven) Nutzer der App haben die App ID auf ihrem Gerät und
