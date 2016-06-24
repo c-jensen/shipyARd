@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Scenes/RenderingScene.unity
+- path: Assets/Scenes/HudScene.unity
   isLoaded: 1
   isActive: 1
