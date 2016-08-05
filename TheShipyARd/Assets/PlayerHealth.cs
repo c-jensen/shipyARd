@@ -12,7 +12,7 @@ public class PlayerHealth : MonoBehaviour {
 		playerDead = true;
 	}
 
-	void playerDead()
+	void playerIsDead()
 	{
 	}
 
@@ -32,7 +32,7 @@ public class PlayerHealth : MonoBehaviour {
 			// Player is already dead
 			else 
 			{
-				playerDead();
+                playerIsDead();
 			}
 		}
 	

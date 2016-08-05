@@ -25,9 +25,10 @@ public class RandomMatchMaker : Photon.PunBehaviour
     public override void OnJoinedRoom()
     {
         GameObject playerObject = PhotonNetwork.Instantiate("PlayerObject", Vector3.zero, Quaternion.identity, 0);
-        //GameObject sharedCube = PhotonNetwork.Instantiate("SharedCube", Vector3.zero, Quaternion.identity, 0);
+
         // Der Parent des sharedCubes wird auf den Marker gesetzt damit der Cube gerendert wird
-        //sharedCube.transform.parent = GameObject.Find("p1_target").transform;
+        GameObject sharedCube = PhotonNetwork.Instantiate("SharedCube", Vector3.zero, Quaternion.identity, 0);
+        sharedCube.transform.parent = GameObject.Find("p1_target").transform;
     }
 
     void OnPhotonRandomJoinFailed()
