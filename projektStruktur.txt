@@ -1,0 +1,23 @@
+#1 StartMenuScene
+  Rendert GUI
+    Start Button -> Führt Skript aus was Szene 2 lädt
+
+#2 LobbyScene
+  Rendert Waiting for Players Schriftzug
+  Photon Skript in Szene enthalten
+    Player connected zu Lobby und Room
+    Sobald genügend Player verfügbar in Room, wird Szene 3 geladen
+
+#3 RenderingScene
+  Included die GameScene (#4)
+  Included das HUD (#5)
+  Hat die AR Camera
+  Rendert den AR Content auf die Marker
+
+#4 GameScene
+  Enthält Player
+  TODO: GameState der Waffen und Targets zuweist
+
+#5 HUD
+
+  Zeigt verschiedene Infos über den Player an (Target, Tool, HP, Score, Attack Button)

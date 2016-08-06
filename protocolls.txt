@@ -1,14 +1,29 @@
+* * * 05/06.08.2016 * * *
+
+	HACKNIGHT #2
+
+		SA 06:
+			GUI in erster Version fertig
+			Start in Lobby und warten auf genügend Player
+			Szenen Organisation
+
+		FR 05:
+			Beide sehr müde
+			VIKING XXL!
+			Bugfixes und Projekt zum laufen bringen
+			GUI weitergemacht
+
 ﻿* * * 18/19.06.2016 * * *
 
 	HACKNIGHT
 
-		SA 19:
+		SO 19:
 			Server connect der laufenden App Instanzen
 			Basic Networking Test
 				Jeder Spieler erhält eigenen SharedCube auf Marker p1 und kann ihn rotieren
 				Alle Spieler sehen die Rotation der Cubes der anderen Spieler
 
-		FR 18:
+		SA 18:
 			Rahmengerüst Shipyard Integration Unity + Vuforia + Photon
 				Start Menu + Rendering Scene + including HUD Scene + Game Scene mit Script für Networking
 				Photon Test App -> Basic Tutorial ausprobiert

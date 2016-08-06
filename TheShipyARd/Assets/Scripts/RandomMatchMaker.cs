@@ -5,6 +5,9 @@ using Photon;
 
 public class RandomMatchMaker : Photon.PunBehaviour
 {
+    public static int MINIMUM_NUMBER_OF_PLAYERS = 2;
+    public static int currentNumberOfPlayers = 0;
+    public static bool isConnected = false;
 
     void Start()
     {
@@ -24,11 +27,25 @@ public class RandomMatchMaker : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        GameObject playerObject = PhotonNetwork.Instantiate("PlayerObject", Vector3.zero, Quaternion.identity, 0);
+        isConnected = true;
+    }
 
-        // Der Parent des sharedCubes wird auf den Marker gesetzt damit der Cube gerendert wird
-        GameObject sharedCube = PhotonNetwork.Instantiate("SharedCube", Vector3.zero, Quaternion.identity, 0);
-        sharedCube.transform.parent = GameObject.Find("p1_target").transform;
+    void Update()
+    {
+        currentNumberOfPlayers = PhotonNetwork.room.playerCount;
+
+        if (currentNumberOfPlayers == MINIMUM_NUMBER_OF_PLAYERS)
+        {
+            Application.LoadLevel(2);
+            //TODO: DELETE THIS LATER
+            /*
+            GameObject playerObject = PhotonNetwork.Instantiate("PlayerObject", Vector3.zero, Quaternion.identity, 0);
+
+            // Der Parent des sharedCubes wird auf den Marker gesetzt damit der Cube gerendert wird
+            GameObject sharedCube = PhotonNetwork.Instantiate("SharedCube", Vector3.zero, Quaternion.identity, 0);
+            sharedCube.transform.parent = GameObject.Find("p1_target").transform;
+            */
+        }
     }
 
     void OnPhotonRandomJoinFailed()

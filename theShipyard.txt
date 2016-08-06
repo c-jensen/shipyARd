@@ -5,6 +5,7 @@ GOALS:
 		Verschiedene Spiele spontan spielbar (nur App herunterladen)
 		Abwechslungsreicher, da Marker viel flexibler einsetzbar sind als z.B. Real Life Gaming Kostüme
 
+
 Spiel the Ship wird in AR nachgebaut
 
 - Jeder Mitspieler hat Marker mit Sicherheitsnadel am Tshirt und repr�sentiert eine der Rollen / Passagiere
