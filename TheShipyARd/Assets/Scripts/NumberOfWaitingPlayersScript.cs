@@ -19,13 +19,13 @@ public class NumberOfWaitingPlayersScript : MonoBehaviour {
     void Update()
     {
 
-        if (!RandomMatchMaker.isConnected)
+        if (!NetworkManager.isConnected)
         {
             numberOfPlayersText.text = "Connecting to server...";
         }
         else
         {
-            int missingNoPlayers = RandomMatchMaker.expectedNumberOfPlayers - RandomMatchMaker.currentNumberOfPlayers;
+            int missingNoPlayers = NetworkManager.expectedNumberOfPlayers - NetworkManager.currentNumberOfPlayers;
 
             string playerString = "players";
 
@@ -34,7 +34,7 @@ public class NumberOfWaitingPlayersScript : MonoBehaviour {
 
             numberOfPlayersText.text = "Connection established" + "\n \n \n" +
                     "Waiting for " + missingNoPlayers.ToString() + " additional " + playerString + "\n \n" +
-                    "Current number of players: " + RandomMatchMaker.currentNumberOfPlayers.ToString();
+                    "Current number of players: " + NetworkManager.currentNumberOfPlayers.ToString();
         }
     }
 }

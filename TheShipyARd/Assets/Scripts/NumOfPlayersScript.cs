@@ -31,7 +31,7 @@ public class NumOfPlayersScript : MonoBehaviour {
 
     // Update is called once per frame
     void Update () {
-        RandomMatchMaker.expectedNumberOfPlayers = (int) slider.value;
-        textBox.text = RandomMatchMaker.expectedNumberOfPlayers.ToString();
+        NetworkManager.expectedNumberOfPlayers = (int) slider.value;
+        textBox.text = NetworkManager.expectedNumberOfPlayers.ToString();
     }
 }
