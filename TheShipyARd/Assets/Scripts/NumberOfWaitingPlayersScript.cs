@@ -25,7 +25,7 @@ public class NumberOfWaitingPlayersScript : MonoBehaviour {
         }
         else
         {
-            int missingNoPlayers = RandomMatchMaker.MINIMUM_NUMBER_OF_PLAYERS - RandomMatchMaker.currentNumberOfPlayers;
+            int missingNoPlayers = RandomMatchMaker.expectedNumberOfPlayers - RandomMatchMaker.currentNumberOfPlayers;
 
             string playerString = "players";
 

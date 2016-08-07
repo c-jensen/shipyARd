@@ -5,7 +5,7 @@ using Photon;
 
 public class RandomMatchMaker : Photon.PunBehaviour
 {
-    public static int MINIMUM_NUMBER_OF_PLAYERS = 2;
+    public static int expectedNumberOfPlayers = 2;
     public static int currentNumberOfPlayers = 0;
     public static bool isConnected = false;
 
@@ -34,7 +34,7 @@ public class RandomMatchMaker : Photon.PunBehaviour
     {
         currentNumberOfPlayers = PhotonNetwork.room.playerCount;
 
-        if (currentNumberOfPlayers == MINIMUM_NUMBER_OF_PLAYERS)
+        if (currentNumberOfPlayers == expectedNumberOfPlayers)
         {
             Application.LoadLevel(2);
             //TODO: DELETE THIS LATER
