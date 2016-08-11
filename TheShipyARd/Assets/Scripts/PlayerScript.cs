@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 
 public enum Target
@@ -30,7 +31,12 @@ public enum Tool
 
 public class PlayerScript : MonoBehaviour {
 
-    
+    //List containing all unused targets
+    public static List<Target> availableTargets = new List<Target>();
+    //List containing all unused player IDs
+    public static List<Target> availablePlayers = new List<Target>();
+
+    private GameObject player;
 
     public float health = 100f;
     public int score = 0;
@@ -43,15 +49,16 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        player = GameObject.Find("Player");
 
-        GameObject go = new GameObject();
-        go.AddComponent<GUIText>();
+        if (PhotonNetwork.isMasterClient == true)
+        {
+            Debug.LogError("We now generate the list");
+            generatePlayerAndTargetList();
+        }
 
-        GUIText guiText = go.GetComponent<GUIText>();
-        go.transform.position = new Vector3(0.5f, 0.5f, 0.0f);
-        guiText.text = "Target NR: " + (int)targetPlayer + " Player ID: " + (int)playerID;
-
-        //requestTargetAndPlayer();
+        Debug.LogError("We now run requestTargetAndPlayer");
+        requestTargetAndPlayer();        
     }
 
     // Update is called once per frame
@@ -88,20 +95,87 @@ public class PlayerScript : MonoBehaviour {
         health -= amount;
     }
 
+    public void generatePlayerAndTargetList()
+    {
+        //Add all target to a list
+        for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
+        {
+            availableTargets.Add((Target)i);
+        }
+        //Shuffle list
+        for (int i = 0; i < availableTargets.Count; i++)
+        {
+            Target temp = availableTargets[i];
+            int randomIndex = Random.Range(i, availableTargets.Count);
+            availableTargets[i] = availableTargets[randomIndex];
+            availableTargets[randomIndex] = temp;
+        }
+        //Remove enough elements so that list size matchtes number of players
+        for (int i = 0; i < availableTargets.Count - NetworkManager.expectedNumberOfPlayers; i++)
+        {
+            availableTargets.RemoveAt(i);
+        }
+
+        availablePlayers = availableTargets;
+        availablePlayers.Reverse();
+        //In case of an odd number of players the middle element gets switched
+        if (availablePlayers.Count % 2 == 1)
+        {
+            int switchIndex = (int)Mathf.Floor(availablePlayers.Count / 2.0f);
+            Target tmp = availablePlayers[0];
+            availablePlayers[0] = availablePlayers[switchIndex];
+            availablePlayers[switchIndex] = tmp;
+        }
+    }
+
     public void requestTargetAndPlayer()
     {
-        NetworkManager.photonView.RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player);
+        Debug.LogError("requestTargetAndPlayer");
+        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);    
+    }
+
+    [PunRPC]
+    public void rpc_sendTargetAndPlayerToClient(PhotonMessageInfo info)
+    {
+        Debug.LogError("rpc_sendTargetAndPlayerToClient");
+
+        if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
+        {
+            //send the target to the client
+            Target clientTarget = availableTargets[0];
+            availableTargets.RemoveAt(0);
+            player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", info.sender, clientTarget);
+
+            //send the player ID to the client
+            Target clientPlayer = availablePlayers[0];
+            availablePlayers.RemoveAt(0);
+            player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", info.sender, clientPlayer);
+        }
     }
 
     [PunRPC]
     public void rpc_receiveTarget(Target target)
     {
+        Debug.LogError("receiveTarget");
         targetPlayer = target;
     }
 
     [PunRPC]
-    public void rpc_reveivePlayer(Target player)
+    public void rpc_receivePlayer(Target player)
     {
+        Debug.LogError("receivePlayer");
         playerID = player;
+
+        GameObject go = new GameObject();
+        go.AddComponent<GUIText>();
+
+        GUIText guiText = go.GetComponent<GUIText>();
+        go.transform.position = new Vector3(0.5f, 0.5f, 0.0f);
+        guiText.text = "Target NR: " + (int)targetPlayer + " Player ID: " + (int)playerID;
+    }
+
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+
     }
 }

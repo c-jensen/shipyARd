@@ -10,19 +10,24 @@ public class NetworkManager : Photon.PunBehaviour
     public static int currentNumberOfPlayers = 0;
     public static bool isConnected = false;
 
-    //List containing all unused targets
-    private List<Target> availableTargets = new List<Target>();
-    //List containing all unused player IDs
-    private List<Target> availablePlayers = new List<Target>();
-
-    public static PhotonView photonView;
+    private GameObject player;
 
     void Start()
     {
         PhotonNetwork.logLevel = PhotonLogLevel.Full;
         PhotonNetwork.ConnectUsingSettings("0.1");
 
-        photonView = PhotonView.Get(this);
+        player = GameObject.Find("Player");
+    }
+    void Update()
+    {
+        if(isConnected == true)
+            currentNumberOfPlayers = PhotonNetwork.room.playerCount;
+
+        if (currentNumberOfPlayers == expectedNumberOfPlayers)
+        {
+            Application.LoadLevel(2);
+        }
     }
 
     void OnGUI()
@@ -37,80 +42,26 @@ public class NetworkManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
+        Debug.LogError("Room joined");
+
         isConnected = true;
 
         //the first client becomes the master
         if (PhotonNetwork.masterClient == null)
         {
             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
+            Debug.LogError("master is set");
         }
 
-        if (PhotonNetwork.isMasterClient)
-        {
-            //Add all target to a list
-            for(int i = 0; i < (int) Target.MAX_NUM_OF_TARGETS; i++)
-            {
-                availableTargets[i] = (Target)i;
-            }
-            //Shuffle list
-            for (int i = 0; i < availableTargets.Count; i++)
-            {
-                Target temp = availableTargets[i];
-                int randomIndex = Random.Range(i, availableTargets.Count);
-                availableTargets[i] = availableTargets[randomIndex];
-                availableTargets[randomIndex] = temp;
-            }
-            //Remove enough elements so that list size matchtes number of players
-            for(int i = 0; i < availableTargets.Count - expectedNumberOfPlayers; i++)
-            {
-                availableTargets.RemoveAt(i);
-            }
+        if(PhotonNetwork.isMasterClient == true)
+            Debug.LogError("i am da fuckin mastaaaaa");
 
-            availablePlayers = availableTargets;
-            availablePlayers.Reverse();
-            //In case of an odd number of players the middle element gets switched
-            if(availablePlayers.Count % 2 == 1)
-            {
-                int switchIndex = (int)Mathf.Floor(availablePlayers.Count / 2.0f);
-                Target tmp = availablePlayers[0];
-                availablePlayers[0] = availablePlayers[switchIndex];
-                availablePlayers[switchIndex] = tmp;
-            }
-        }
-        
-        
-    }
 
-    void Update()
-    {
-        currentNumberOfPlayers = PhotonNetwork.room.playerCount;
-
-        if (currentNumberOfPlayers == expectedNumberOfPlayers)
-        {
-            Application.LoadLevel(2);
-        }
     }
 
     void OnPhotonRandomJoinFailed()
     {
         Debug.Log("Can't join random room!");
         PhotonNetwork.CreateRoom(null); //null could be any room name id
-    }
-
-    [PunRPC]
-    public void rpc_sendTargetAndPlayerToClient(PhotonPlayer sender)
-    {
-        if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
-        {
-            //send the target to the client
-            Target clientTarget = availableTargets[0];
-            availableTargets.RemoveAt(0);
-            NetworkManager.photonView.RPC("rpc_receiveTarget", sender, clientTarget);
-
-            //send the player ID to the client
-            Target clientPlayer = availablePlayers[0];
-            availablePlayers.RemoveAt(0);
-            NetworkManager.photonView.RPC("rpc_reveivePlayer", sender, clientPlayer);
-        }
-    }
+    }   
 }
