@@ -1,3 +1,24 @@
+* * * 12.08.2016 * * *
+
+	RPC Calls fixed
+	Wir können Nachrichten von Client an Master und zurück senden
+	TODO:
+		Darauf achten, dass Master nur vorhandene Player als Target zuweist
+			Jeder Player muss auch als Target vergeben sein
+		Debug Logs auskommentieren
+		requestPlayerAndTarget sollte in Update sein, falls mit dem ersten RPC etwas schief geht
+			Abfragen, ob player und target == UNKNOWN - falls ja neuen RPC an Master senden
+		Optional: If Master: onGUI Restart Game Button
+		Exit Button bisher ohne Funktionalität
+
+* * * 11.08.2016 * * *
+
+	Umbau der RPC Calls
+		Alles in Player Script
+		Jeder Client schickt Anfrage für Ids an Master
+		Master antwortet den Clients und weist ihnen Target und Player ID zu
+		Funktioniert jedoch noch nicht - calls kommen nicht an
+
 * * * 07.08.2016 * * *
 
 	Sunday Hackerei

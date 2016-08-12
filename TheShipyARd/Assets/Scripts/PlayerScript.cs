@@ -131,40 +131,52 @@ public class PlayerScript : MonoBehaviour {
     public void requestTargetAndPlayer()
     {
         Debug.LogError("requestTargetAndPlayer");
-        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);    
+
+        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+
+        //player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);
     }
 
     [PunRPC]
-    public void rpc_sendTargetAndPlayerToClient(PhotonMessageInfo info)
+    public void rpc_sendTargetAndPlayerToClient(int id)
     {
         Debug.LogError("rpc_sendTargetAndPlayerToClient");
 
         if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
         {
+            Debug.LogError(id);
+
             //send the target to the client
-            Target clientTarget = availableTargets[0];
+            int clientTarget = (int) availableTargets[0];
             availableTargets.RemoveAt(0);
-            player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", info.sender, clientTarget);
+            Debug.LogError(string.Format("I am here a"));
+            player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
 
             //send the player ID to the client
-            Target clientPlayer = availablePlayers[0];
+            int clientPlayer = (int) availablePlayers[0];
             availablePlayers.RemoveAt(0);
-            player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", info.sender, clientPlayer);
+            Debug.LogError(string.Format("I am here b"));
+
+            player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
         }
     }
 
     [PunRPC]
-    public void rpc_receiveTarget(Target target)
+    public void rpc_receiveTarget(int target, PhotonMessageInfo info)
     {
+        //Debug.LogError(string.Format("Info rpc_receiveTarget: {0} {1} {2}", info.sender, info.photonView, info.timestamp));
+
         Debug.LogError("receiveTarget");
-        targetPlayer = target;
+        targetPlayer = (Target) target;
     }
 
     [PunRPC]
-    public void rpc_receivePlayer(Target player)
+    public void rpc_receivePlayer(int player, PhotonMessageInfo info)
     {
+        //Debug.LogError(string.Format("Info rpc_receivePlayer: {0} {1} {2}", info.sender, info.photonView, info.timestamp));
+
         Debug.LogError("receivePlayer");
-        playerID = player;
+        playerID = (Target) player;
 
         GameObject go = new GameObject();
         go.AddComponent<GUIText>();
