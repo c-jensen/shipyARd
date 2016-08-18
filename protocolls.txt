@@ -1,21 +1,30 @@
 * * * 18.08.2016 * * *
 
-	RPC Calls fixed
-	Wir können Nachrichten von Client an Master und zurück senden
-	TODO:
-		[ ] Darauf achten, dass Master nur vorhandene Player als Target zuweist
+		Next Steps:
+			Bei klick auf Angriffs button dem anvisierten Player Leben abziehen
+
+			Wenn tot, überprüfen ob angezeigter Marker das eigene Target ist oder Spieler der einen selbst als Target hat
+					-> Falls ja valider Angriff
+					-> Pluspunkte, ansonsten Minuspunkte
+
+			Erstmal hardgecodeten damage machen, danach Waffen einbauen
+
+		Master weist nur vorhandene Player als Target zu
 			Jeder Player muss auch als Target vergeben sein
+		Debug Logs auskommentiert
+		Clients warten bei start einige Sekunden, um dem Master Zeit zu geben die Listen zu erstellen
+		Bug dass man noch von vorheriger Runde connected ist und direkt ins Spiel kommt behoben
 
-		[X] Debug Logs auskommentieren
-
-		[X] requestPlayerAndTarget sollte in Update sein, falls mit dem ersten RPC etwas schief geht
-			Abfragen, ob player und target == UNKNOWN - falls ja neuen RPC an Master senden
-
-		Optional:
+		TODO: Optional:
 		If Master: onGUI Restart Game Button
 		Exit Button bisher ohne Funktionalität
 		Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
-		[X] Bug dass man noch von vorheriger Runde connected ist und direkt ins Spiel kommt beheben
+		Coole eigengemachte Marker
+
+		TODO wenn mehr als 3 Player genutzt werden sollen:
+			Im Player Script enum erweitern
+			In Rendering Scene neue Marker einfügen
+			In Target Script weitere Imagevariablen anlegen
 
 * * * 12.08.2016 * * *
 

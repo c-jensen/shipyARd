@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 using System.Collections.Generic;
 
@@ -8,6 +9,7 @@ public enum Target
     TARGET_A,
     TARGET_B,
     TARGET_C,
+    /*
     TARGET_D,
     TARGET_E,
     TARGET_F,
@@ -15,6 +17,7 @@ public enum Target
     TARGET_H,
     TARGET_I,
     TARGET_J,
+    */
     MAX_NUM_OF_TARGETS,
     UNKNOWN
 
@@ -37,6 +40,7 @@ public class PlayerScript : MonoBehaviour {
     public static List<Target> availablePlayers = new List<Target>();
 
     private GameObject player;
+    private TargetScript targetImage;
 
     public float health = 100f;
     public int score = 0;
@@ -54,6 +58,9 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        GameObject go = GameObject.Find("TargetImageGUI");
+        Image targetComponent = go.GetComponent<Image>();
+        targetImage = targetComponent.GetComponent<TargetScript>();
         player = GameObject.Find("Player");
 
         if (PhotonNetwork.isMasterClient == false)
@@ -179,6 +186,17 @@ public class PlayerScript : MonoBehaviour {
 
         Debug.LogError("receiveTarget");
         targetPlayer = (Target) target;
+
+        if (target == 0)
+            targetImage.setImage0();
+        else if (target == 1)
+            targetImage.setImage1();
+        else if (target == 2)
+            targetImage.setImage2();
+        else if (target == 3)
+            targetImage.setImage3();
+        else if (target == 4)
+            targetImage.setImage4();
     }
 
     [PunRPC]
@@ -188,13 +206,14 @@ public class PlayerScript : MonoBehaviour {
 
         Debug.LogError("receivePlayer");
         playerID = (Target) player;
-
+        
         GameObject go = new GameObject();
         go.AddComponent<GUIText>();
 
         GUIText guiText = go.GetComponent<GUIText>();
         go.transform.position = new Vector3(0.5f, 0.5f, 0.0f);
         guiText.text = "Target NR: " + (int)targetPlayer + " Player ID: " + (int)playerID;
+        
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
