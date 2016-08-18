@@ -10,14 +10,20 @@ public class NetworkManager : Photon.PunBehaviour
     public static int currentNumberOfPlayers = 0;
     public static bool isConnected = false;
 
-    private GameObject player;
+    IEnumerator waitRoutine()
+    {
+        yield return new WaitForSeconds(5.0f);
+    }
 
     void Start()
     {
+        if (!PhotonNetwork.isMasterClient)
+        {
+            StartCoroutine(waitRoutine());
+        }
+
         PhotonNetwork.logLevel = PhotonLogLevel.Full;
         PhotonNetwork.ConnectUsingSettings("0.1");
-
-        player = GameObject.Find("Player");
     }
     void Update()
     {
@@ -27,6 +33,7 @@ public class NetworkManager : Photon.PunBehaviour
         if (currentNumberOfPlayers == expectedNumberOfPlayers)
         {
             Application.LoadLevel(2);
+            PhotonNetwork.room.open = false;
         }
     }
 

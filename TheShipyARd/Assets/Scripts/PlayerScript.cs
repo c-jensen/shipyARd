@@ -46,10 +46,18 @@ public class PlayerScript : MonoBehaviour {
     public Target playerID = Target.UNKNOWN;
     public Tool activeTool = Tool.NONE;
 
+    IEnumerator wait()
+    {
+        yield return new WaitForSeconds(15.0f);
+    }
+
     // Use this for initialization
     void Start()
     {
         player = GameObject.Find("Player");
+
+        if (PhotonNetwork.isMasterClient == false)
+            wait();
 
         if (PhotonNetwork.isMasterClient == true)
         {
@@ -98,34 +106,29 @@ public class PlayerScript : MonoBehaviour {
     public void generatePlayerAndTargetList()
     {
         //Add all target to a list
-        for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
+        for (int i = 0; i < NetworkManager.expectedNumberOfPlayers; i++)
         {
             availableTargets.Add((Target)i);
+            availablePlayers.Add((Target)i);
         }
-        //Shuffle list
+        
+        //Shuffle lists
         for (int i = 0; i < availableTargets.Count; i++)
         {
             Target temp = availableTargets[i];
-            int randomIndex = Random.Range(i, availableTargets.Count);
+            int randomIndex = Random.Range(i, availableTargets.Count-1);
             availableTargets[i] = availableTargets[randomIndex];
             availableTargets[randomIndex] = temp;
         }
-        //Remove enough elements so that list size matchtes number of players
-        for (int i = 0; i < availableTargets.Count - NetworkManager.expectedNumberOfPlayers; i++)
+
+        //copy list
+        for (int i = 0; i < availableTargets.Count; i++)
         {
-            availableTargets.RemoveAt(i);
+            availablePlayers[i] = availableTargets[i];
         }
 
-        availablePlayers = availableTargets;
         availablePlayers.Reverse();
-        //In case of an odd number of players the middle element gets switched
-        if (availablePlayers.Count % 2 == 1)
-        {
-            int switchIndex = (int)Mathf.Floor(availablePlayers.Count / 2.0f);
-            Target tmp = availablePlayers[0];
-            availablePlayers[0] = availablePlayers[switchIndex];
-            availablePlayers[switchIndex] = tmp;
-        }
+
     }
 
     public void requestTargetAndPlayer()
@@ -144,19 +147,27 @@ public class PlayerScript : MonoBehaviour {
 
         if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
         {
-            Debug.LogError(id);
+            //send the target and player to the client
+            int clientTarget = (int)availableTargets[0];
+            int clientPlayer = (int)availablePlayers[0];
 
-            //send the target to the client
-            int clientTarget = (int) availableTargets[0];
-            availableTargets.RemoveAt(0);
-            Debug.LogError(string.Format("I am here a"));
+            if (clientTarget == clientPlayer)
+            {
+                if (availablePlayers.Count >= 2)
+                {
+                    clientPlayer = (int)availablePlayers[1];
+                    availableTargets.RemoveAt(0);
+                    availablePlayers.RemoveAt(1);
+                }
+            }
+            else
+            {
+                availableTargets.RemoveAt(0);
+                availablePlayers.RemoveAt(0);
+            }
+
+
             player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
-
-            //send the player ID to the client
-            int clientPlayer = (int) availablePlayers[0];
-            availablePlayers.RemoveAt(0);
-            Debug.LogError(string.Format("I am here b"));
-
             player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
         }
     }
