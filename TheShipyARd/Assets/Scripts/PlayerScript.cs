@@ -57,7 +57,7 @@ public class PlayerScript : MonoBehaviour {
         player = GameObject.Find("Player");
 
         if (PhotonNetwork.isMasterClient == false)
-            wait();
+            StartCoroutine(wait());
 
         if (PhotonNetwork.isMasterClient == true)
         {
