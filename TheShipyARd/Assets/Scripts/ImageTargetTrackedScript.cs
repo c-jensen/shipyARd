@@ -11,12 +11,19 @@ namespace Vuforia
         #region PRIVATE_MEMBER_VARIABLES
 
         private TrackableBehaviour mTrackableBehaviour;
+        private PlayerScript playerScript = null;
 
         #endregion // PRIVATE_MEMBER_VARIABLES
 
 
 
         #region UNTIY_MONOBEHAVIOUR_METHODS
+
+        void Awake()
+        {          
+            Debug.LogError("PlayerScript set");
+
+        }
 
         void Start()
         {
@@ -62,6 +69,12 @@ namespace Vuforia
 
         private void OnTrackingFound()
         {
+            if(playerScript == null)
+            {
+                GameObject player = GameObject.Find("Player");
+                playerScript = player.GetComponent<PlayerScript>();
+            }     
+
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
@@ -77,7 +90,21 @@ namespace Vuforia
                 component.enabled = true;
             }
 
-            Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " found");
+            if(mTrackableBehaviour.TrackableName == "p1")
+            {
+                playerScript.setTrackedTarget(0);
+                Debug.Log("Trackable 0 set");
+            }
+            else if(mTrackableBehaviour.TrackableName == "p2")
+            {
+                playerScript.setTrackedTarget(1);
+                Debug.Log("Trackable 1 set");
+            }
+            else if (mTrackableBehaviour.TrackableName == "p3")
+            {
+                playerScript.setTrackedTarget(2);
+                Debug.Log("Trackable 2 set");
+            }
         }
 
 

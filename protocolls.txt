@@ -20,11 +20,13 @@
 		Exit Button bisher ohne Funktionalität
 		Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
 		Coole eigengemachte Marker
+		Image Targets umbennen mit Indexbeginn bei 0
 
 		TODO wenn mehr als 3 Player genutzt werden sollen:
 			Im Player Script enum erweitern
 			In Rendering Scene neue Marker einfügen
 			In Target Script weitere Imagevariablen anlegen
+			In ImageTargetTrackedScript weitere if Bedingungen implementieren
 
 * * * 12.08.2016 * * *
 

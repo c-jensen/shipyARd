@@ -6,17 +6,17 @@ using System.Collections.Generic;
 
 public enum Target
 {
-    TARGET_A,
-    TARGET_B,
-    TARGET_C,
+    TARGET_0,
+    TARGET_1,
+    TARGET_2,
     /*
-    TARGET_D,
-    TARGET_E,
-    TARGET_F,
-    TARGET_G,
-    TARGET_H,
-    TARGET_I,
-    TARGET_J,
+    TARGET_3,
+    TARGET_4,
+    TARGET_5,
+    TARGET_6,
+    TARGET_7,
+    TARGET_8,
+    TARGET_9,
     */
     MAX_NUM_OF_TARGETS,
     UNKNOWN
@@ -38,6 +38,8 @@ public class PlayerScript : MonoBehaviour {
     public static List<Target> availableTargets = new List<Target>();
     //List containing all unused player IDs
     public static List<Target> availablePlayers = new List<Target>();
+
+    private Target trackedTarget;
 
     private GameObject player;
     private TargetScript targetImage;
@@ -63,6 +65,8 @@ public class PlayerScript : MonoBehaviour {
         targetImage = targetComponent.GetComponent<TargetScript>();
         player = GameObject.Find("Player");
 
+        //trackedTarget = Target.UNKNOWN;
+
         if (PhotonNetwork.isMasterClient == false)
             StartCoroutine(wait());
 
@@ -79,6 +83,8 @@ public class PlayerScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
+        //Debug.LogError("Current trackedTarget is " + trackedTarget);
+
         if (health <= 0f)
         {
             // Player currently dying
@@ -108,6 +114,12 @@ public class PlayerScript : MonoBehaviour {
     public void takeDamage(float amount)
     {
         health -= amount;
+    }
+
+    public void setTrackedTarget(int trackedEnemy)
+    {
+        trackedTarget = (Target)trackedEnemy;
+        Debug.LogError("Tracked Target set on " + trackedEnemy + " " + trackedTarget);
     }
 
     public void generatePlayerAndTargetList()
