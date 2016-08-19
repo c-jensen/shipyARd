@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 namespace Vuforia
 {
@@ -18,12 +19,6 @@ namespace Vuforia
 
 
         #region UNTIY_MONOBEHAVIOUR_METHODS
-
-        void Awake()
-        {          
-            Debug.LogError("PlayerScript set");
-
-        }
 
         void Start()
         {
@@ -93,17 +88,14 @@ namespace Vuforia
             if(mTrackableBehaviour.TrackableName == "p1")
             {
                 playerScript.setTrackedTarget(0);
-                Debug.Log("Trackable 0 set");
             }
             else if(mTrackableBehaviour.TrackableName == "p2")
             {
                 playerScript.setTrackedTarget(1);
-                Debug.Log("Trackable 1 set");
             }
             else if (mTrackableBehaviour.TrackableName == "p3")
             {
                 playerScript.setTrackedTarget(2);
-                Debug.Log("Trackable 2 set");
             }
         }
 
@@ -124,8 +116,6 @@ namespace Vuforia
             {
                 component.enabled = false;
             }
-
-            Debug.Log("Trackable " + mTrackableBehaviour.TrackableName + " lost");
         }
 
         #endregion // PRIVATE_METHODS

@@ -1,3 +1,30 @@
+* * * 19.08.2016 * * *
+
+		Next Steps:
+			Schaden korrigeren d.h. RPC Call an angegriffenen, damit er sein Leben reduziert und der Player soll dann, wenn er tot ist eine rpc an alle schicken und diese
+				über den Tod des Spielers informieren
+			Dropdown Menu, damit beim Start alle ihren Marker auswählen (bzw. ihrer Marker ID). Dann ersetzen, dass marker id bisher nur auf photon id - 1 gesetzt wird
+			Waffen einbauen
+
+		Heute:
+			Jeder Player speichert nun den aktuell anvisierten Player (getrackten Marker) bzw. UNKNOWN wenn gerade keiner aktiv ist
+			Angriffe werden durchgeführt (Der andere Spieler verliert Leben), allerdings noch nicht der richtige Spieler (RPC Call funktioniert noch nicht)
+			Marker IDs werden nun gespeichert und die zufällig generierten player IDs werden den Markern zu Beginn der Runde hinzugefügt d.h. auf jedem Marker wird nun
+			die für diese Runde korrekte player id angezeigt
+
+		TODO: Optional:
+		If Master: onGUI Restart Game Button
+		Exit Button bisher ohne Funktionalität
+		Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
+		Coole eigengemachte Marker
+		Image Targets umbennen mit Indexbeginn bei 0
+
+		TODO wenn mehr als 3 Player genutzt werden sollen:
+			Im Player Script enum erweitern
+			In Rendering Scene neue Marker einfügen
+			In Target Script weitere Imagevariablen anlegen
+			In ImageTargetTrackedScript weitere if Bedingungen implementieren
+
 * * * 18.08.2016 * * *
 
 		Next Steps:

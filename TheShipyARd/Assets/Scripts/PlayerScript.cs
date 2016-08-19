@@ -39,7 +39,28 @@ public class PlayerScript : MonoBehaviour {
     //List containing all unused player IDs
     public static List<Target> availablePlayers = new List<Target>();
 
+    public Sprite playerImage0;
+    public Sprite playerImage1;
+    public Sprite playerImage2;
+    public Sprite playerImage3;
+    public Sprite playerImage4;
+    public Sprite playerImage5;
+    public Sprite playerImage6;
+    public Sprite playerImage7;
+    public Sprite playerImage8;
+    public Sprite playerImage9;
+
+    private Hashtable markerToPlayer;
+    private Hashtable markerToPhotonID;
+
+    private int markerID;
+    private GameObject plane;
+
     private Target trackedTarget;
+
+    private int targetID;
+
+    private int markerPlayerCounter = 0;
 
     private GameObject player;
     private TargetScript targetImage;
@@ -60,6 +81,9 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        markerToPlayer = new Hashtable();
+        markerToPhotonID = new Hashtable();
+        markerID = PhotonNetwork.player.ID - 1;
         GameObject go = GameObject.Find("TargetImageGUI");
         Image targetComponent = go.GetComponent<Image>();
         targetImage = targetComponent.GetComponent<TargetScript>();
@@ -72,19 +96,25 @@ public class PlayerScript : MonoBehaviour {
 
         if (PhotonNetwork.isMasterClient == true)
         {
-            Debug.LogError("We now generate the list");
             generatePlayerAndTargetList();
         }
 
-        Debug.LogError("We now run requestTargetAndPlayer");
-        requestTargetAndPlayer();        
+        requestTargetAndPlayer();
+
+        
+    }
+
+    public void attack()
+    {
+        targetID = (int) trackedTarget;
+        targetID = targetID + 1;
+        Debug.LogError("targetID ist " + targetID);
+        player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(targetID), 1.0f);
     }
 
     // Update is called once per frame
     void Update()
     {
-        //Debug.LogError("Current trackedTarget is " + trackedTarget);
-
         if (health <= 0f)
         {
             // Player currently dying
@@ -111,8 +141,10 @@ public class PlayerScript : MonoBehaviour {
 
     }
 
-    public void takeDamage(float amount)
+    [PunRPC]
+    public void rpc_takeDamage(float amount)
     {
+        Debug.LogError("ICH VERLIERE LEBEN");
         health -= amount;
     }
 
@@ -152,18 +184,14 @@ public class PlayerScript : MonoBehaviour {
 
     public void requestTargetAndPlayer()
     {
-        Debug.LogError("requestTargetAndPlayer");
-
-        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player.ID, markerID);
 
         //player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);
     }
 
     [PunRPC]
-    public void rpc_sendTargetAndPlayerToClient(int id)
+    public void rpc_sendTargetAndPlayerToClient(int id, int marker)
     {
-        Debug.LogError("rpc_sendTargetAndPlayerToClient");
-
         if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
         {
             //send the target and player to the client
@@ -185,18 +213,56 @@ public class PlayerScript : MonoBehaviour {
                 availablePlayers.RemoveAt(0);
             }
 
+            markerToPlayer[marker] = clientPlayer;
+            markerToPhotonID[marker] = id;
 
             player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
             player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
+
+            markerPlayerCounter++;
         }
+
+        if (markerPlayerCounter >= NetworkManager.expectedNumberOfPlayers)
+        {
+            for (int i = 0; i < markerToPlayer.Count; i++)
+            {
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, markerToPlayer[i]);
+            }
+        }
+    }
+
+    [PunRPC]
+    public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID)
+    {
+        Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
+
+        plane = GameObject.Find("player_" + markerID);
+
+        if(playersID == 0) 
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
+        else if(playersID == 1)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
+        else if (playersID == 2)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
+        else if (playersID == 3)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
+        else if (playersID == 4)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
+        else if (playersID == 5)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
+        else if (playersID == 6)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
+        else if (playersID == 7)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
+        else if (playersID == 8)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
+        else if (playersID == 9)
+            plane.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
     }
 
     [PunRPC]
     public void rpc_receiveTarget(int target, PhotonMessageInfo info)
     {
-        //Debug.LogError(string.Format("Info rpc_receiveTarget: {0} {1} {2}", info.sender, info.photonView, info.timestamp));
-
-        Debug.LogError("receiveTarget");
         targetPlayer = (Target) target;
 
         if (target == 0)
@@ -214,11 +280,8 @@ public class PlayerScript : MonoBehaviour {
     [PunRPC]
     public void rpc_receivePlayer(int player, PhotonMessageInfo info)
     {
-        //Debug.LogError(string.Format("Info rpc_receivePlayer: {0} {1} {2}", info.sender, info.photonView, info.timestamp));
-
-        Debug.LogError("receivePlayer");
         playerID = (Target) player;
-        
+
         GameObject go = new GameObject();
         go.AddComponent<GUIText>();
 
