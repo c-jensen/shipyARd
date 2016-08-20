@@ -12,6 +12,8 @@ public class TargetScript : MonoBehaviour {
     public Sprite targetImage2;
     public Sprite targetImage3;
     public Sprite targetImage4;
+    public Sprite targetSuccessfulImage;
+    public Sprite targetUnsuccessfulImage;
 
     // Use this for initialization
     void Awake () {
@@ -53,5 +55,14 @@ public class TargetScript : MonoBehaviour {
     public void setImage4() //method to set our fifth image
     {
         targetComponent.sprite = targetImage4;
+    }
+
+    public void setImageSuccessful() //method to set our fifth image
+    {
+        targetComponent.sprite = targetSuccessfulImage;
+    }
+    public void setImageUnsuccessful() //method to set our fifth image
+    {
+        targetComponent.sprite = targetUnsuccessfulImage;
     }
 }

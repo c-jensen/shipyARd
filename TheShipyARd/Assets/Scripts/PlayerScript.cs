@@ -49,17 +49,21 @@ public class PlayerScript : MonoBehaviour {
     public Sprite playerImage7;
     public Sprite playerImage8;
     public Sprite playerImage9;
+    public Sprite playerDeadImage;
 
     private Hashtable markerToPlayer;
     private Hashtable markerToPhotonID;
+
+    private HealthSliderScript GUIHealthSlider;
+    private ScoreScript GUIScoreText;
+
+    GameObject defeatedHUD;
 
     private int markerID;
     private GameObject plane;
 
     private Target trackedTarget;
-
-    private int targetID;
-
+   
     private int markerPlayerCounter = 0;
 
     private GameObject player;
@@ -81,6 +85,17 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        GameObject scoreText = GameObject.Find("ScoreNumberGUI");
+        GUIScoreText = scoreText.GetComponent<ScoreScript>();
+
+        GameObject healthSlider = GameObject.Find("HealthSlider");
+        GUIHealthSlider = healthSlider.GetComponent<HealthSliderScript>();
+
+        defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
+        defeatedHUD.SetActive(false);
+
+        GUIScoreText.updateScoreValue(score);
+
         markerToPlayer = new Hashtable();
         markerToPhotonID = new Hashtable();
         markerID = PhotonNetwork.player.ID - 1;
@@ -106,46 +121,84 @@ public class PlayerScript : MonoBehaviour {
 
     public void attack()
     {
-        targetID = (int) trackedTarget;
-        targetID = targetID + 1;
-        Debug.LogError("targetID ist " + targetID);
-        player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(targetID), 1.0f);
+        if (!playerDead)
+        {
+            int cast_trackedTarget = (int)trackedTarget;
+
+            if (cast_trackedTarget != markerID)
+            {
+                int photonID = (int)markerToPhotonID[cast_trackedTarget];
+
+                Debug.LogError("targetID ist " + photonID);
+                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, 25.0f);
+            }
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (health <= 0f)
-        {
-            // Player currently dying
-            if (!playerDead)
-            {
-                playerDying();
-            }
-            // Player is already dead
-            else
-            {
-                playerIsDead();
-            }
-        }
-
+       
     }
 
-    void playerDying()
+    void playerDying(int attackerID)
     {
         playerDead = true;
-    }
-
-    void playerIsDead()
-    {
-
+        player.GetComponent<PhotonView>().RPC("rpc_playerDied", PhotonTargets.Others, markerID, attackerID, (int)targetPlayer);
+        Debug.LogError("Ich sterbe und der Mörder ist " + attackerID);
+        GameObject go0 = GameObject.Find("HUDCanvasGUI");
+        go0.SetActive(false);
+        defeatedHUD.SetActive(true);
+        plane = GameObject.Find("player_" + markerID);
+        plane.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
     }
 
     [PunRPC]
-    public void rpc_takeDamage(float amount)
+    public void rpc_playerDied(int markerID, int attackerID, int hisTargetID)
     {
-        Debug.LogError("ICH VERLIERE LEBEN");
-        health -= amount;
+        Debug.LogError("Ich habe gehört, dass " + markerToPlayer[markerID] + " stirbt und sein angreifer war " + attackerID + " und meine targetID ist " + (int)targetPlayer);
+
+        if ((int)markerToPlayer[markerID] == (int)targetPlayer)
+        {
+            if ((int)playerID == attackerID)
+            {
+                targetImage.setImageSuccessful();
+                score++;
+                GUIScoreText.updateScoreValue(score);
+            }
+            else
+            {
+                targetImage.setImageUnsuccessful();
+            }
+        }
+
+        else if ((int)playerID == attackerID)
+        {
+            if (hisTargetID == (int)playerID)
+                score += 2;
+            else
+                score--;
+            GUIScoreText.updateScoreValue(score);
+        }
+
+        plane = GameObject.Find("player_" + markerID);
+        plane.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+    }
+
+    [PunRPC]
+    public void rpc_takeDamage(int attackerID, float amount)
+    {
+        if (!playerDead)
+        {
+            health -= amount;
+            GUIHealthSlider.updateValue(health);
+            Debug.LogError("ICH VERLIERE LEBEN und habe noch: " + health);
+
+            if (health <= 0)
+            {
+                playerDying(attackerID);
+            }
+        }
     }
 
     public void setTrackedTarget(int trackedEnemy)
@@ -226,15 +279,37 @@ public class PlayerScript : MonoBehaviour {
         {
             for (int i = 0; i < markerToPlayer.Count; i++)
             {
-                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, markerToPlayer[i]);
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, markerToPlayer[i], markerToPhotonID[i]);
             }
+
+            //player.GetComponent<PhotonView>().RPC("printHash", PhotonTargets.All);
+
         }
     }
 
+    /*
     [PunRPC]
-    public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID)
+    public void printHash()
     {
-        Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
+        for (int i = 0; i < markerToPlayer.Count; i++)
+        {
+            Debug.LogError("Marker: " + i);
+            Debug.LogError("MarkerToPlayer: " + markerToPlayer[i]);
+            Debug.LogError("MarkertoPhotonID " + markerToPhotonID[i]);
+        }
+    }
+    */
+
+    [PunRPC]
+    public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID, int photonID)
+    {
+        //Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
+
+        if(PhotonNetwork.isMasterClient == false)
+        {
+            markerToPlayer[markerID] = playersID;
+            markerToPhotonID[markerID] = photonID;
+        }
 
         plane = GameObject.Find("player_" + markerID);
 
