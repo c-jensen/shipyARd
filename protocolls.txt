@@ -1,9 +1,10 @@
 * * * 21.08.2016 * * *
 
 Next Steps:
-	Scene in der Spieler ihren Marker auswählen
+	[X] Scene in der Spieler ihren Marker auswählen
 	Bei falschem Kill sollte Spieler informiert werden, dass er den falschen getötet hat und wenn er seinen Attentäter töten eine andere Info
-
+	Waffenschaden einfügen
+	Rausnehmen, dass man seine Waffe gegen eine leere Box tauschen kann
 
 TODO: Optional:
 If Master: onGUI Restart Game Button
@@ -18,12 +19,26 @@ Code umformulieren und alle tötungs metaphern entfernen -> kein Damage sondern 
 Target Enum umbennen Player Enum und dann hat jeder eine Variable vom Typ PlayerID für sich und eine Variable vom Typ PlayerID für sein Target
 	Zusätzlich überall darauf achten, dass die Enum verwendet wird und nicht einfach ints...
 Jail HUD unteren Streifen breiter, damit Vuforia überdeckt wird
+Sicherheitsabfrage, ob gleiche Marker gewählt wurden
+Nur die Marker Bilder beginnen noch bei 0 vom Namen her. Die ids im Game fangen schon bei 0  an
+Daumen hoch und Daumen runter austauschen mit Gefängnishintergrund
+Es sollte mehr als nur Daumen hoch und runter geben. Alle Fälle sollten unterschieden werden mit einem eigenen Bild
+Angriffsbutton auf Interact Button ändern, da wir auch Tools mit diesem Button aufheben
 
 TODO wenn mehr als 3 Player genutzt werden sollen:
 	Im Player Script enum erweitern
 	In Rendering Scene neue Marker einfügen
 	In Target Script weitere Imagevariablen anlegen
 	In ImageTargetTrackedScript weitere if Bedingungen implementieren
+	In StartMenuScene neue Marker IDS in Dropdown einfügen
+
+	Future Work:
+		Guards im Raum (GPS oder extra player in der Runde...)
+		Auswahl Menü Host oder Client und richtige Lobby
+			Nur Host kann player Zahl bestimmen
+		Mehr Waffen, andere Bonus Items, Power Ups
+		2D Personenbilder und Waffen durch animierte 3D Modelle ersetzen
+		Testen ob es mehr Spaß macht die Waffen zufällig zu verteilen
 
 * * * 20.08.2016 * * *
 
@@ -59,12 +74,6 @@ TODO wenn mehr als 3 Player genutzt werden sollen:
 					In Rendering Scene neue Marker einfügen
 					In Target Script weitere Imagevariablen anlegen
 					In ImageTargetTrackedScript weitere if Bedingungen implementieren
-
-				Future Work:
-					Guards im Raum (GPS oder extra player in der Runde...)
-					Auswahl Menü Host oder Client und richtige Lobby
-						Nur Host kann player Zahl bestimmen
-					Mehr Waffen, andere Bonus Items, Power Ups
 
 * * * 19.08.2016 * * *
 

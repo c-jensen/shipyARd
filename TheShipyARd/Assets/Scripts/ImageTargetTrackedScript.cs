@@ -44,8 +44,7 @@ namespace Vuforia
                                         TrackableBehaviour.Status newStatus)
         {
             if (newStatus == TrackableBehaviour.Status.DETECTED ||
-                newStatus == TrackableBehaviour.Status.TRACKED ||
-                newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
+                newStatus == TrackableBehaviour.Status.TRACKED)
             {
                 OnTrackingFound();
             }
@@ -73,9 +72,12 @@ namespace Vuforia
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
+
             // Enable rendering:
             foreach (Renderer component in rendererComponents)
             {
+                Debug.LogError("RenderingComponents are: " + component.name);
+
                 component.enabled = true;
             }
 
@@ -96,12 +98,36 @@ namespace Vuforia
             else if (mTrackableBehaviour.TrackableName == "p3")
             {
                 playerScript.setTrackedTarget(2);
+            }/*
+            else if (mTrackableBehaviour.TrackableName == "w1")
+            {
+                playerScript.setTrackedToolMarker(0);
             }
+            else if (mTrackableBehaviour.TrackableName == "w2")
+            {
+                playerScript.setTrackedToolMarker(1);
+            }
+            else if (mTrackableBehaviour.TrackableName == "w3")
+            {
+                playerScript.setTrackedToolMarker(2);
+            }
+            */
+
+            //Debug.LogError("Started tracking: " + mTrackableBehaviour.TrackableName);
+            //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
+            //Debug.LogError("Tracked Tool is now: " + playerScript.trackedTool);
         }
 
 
         private void OnTrackingLost()
         {
+            //Debug.LogError("Stopped tracking: " + mTrackableBehaviour.TrackableName);
+            //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
+            //Debug.LogError("Tracked Tool is now: " + playerScript.trackedTool);
+
+            playerScript.setTrackedTarget((int)Target.UNKNOWN);
+            //playerScript.setTrackedToolMarker(-1);
+
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 

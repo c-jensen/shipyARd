@@ -26,7 +26,7 @@ public enum Target
 public enum Tool
 {
     HANDCUFF,
-    CABLE_TIE,
+    INJECTION,
     ROPE,
     MAX_NUM_OF_TOOLS,
     NONE
@@ -50,24 +50,41 @@ public class PlayerScript : MonoBehaviour {
     public Sprite playerImage8;
     public Sprite playerImage9;
     public Sprite playerDeadImage;
+    public Sprite thumbsUp;
+    public Sprite thumbsDown;
+
+    public Sprite toolImageHandcuffs;
+    public Sprite toolImageInjection;
+    public Sprite toolImageRope;
+    public Sprite toolImageLooted;
 
     private Hashtable markerToPlayer;
     private Hashtable markerToPhotonID;
+    private Hashtable markerToTool;
 
     private HealthSliderScript GUIHealthSlider;
     private ScoreScript GUIScoreText;
 
     GameObject defeatedHUD;
+    Image onHitHUD;
+    Text infoTextHUD;
 
-    private int markerID;
-    private GameObject plane;
+    Color onHitColor;
+    Color infoTextColor;
+
+    public static int markerID;
+    private GameObject planePlayer;
+    private GameObject planeTool;
 
     private Target trackedTarget;
+
+    private int trackedToolMarker;
    
     private int markerPlayerCounter = 0;
 
     private GameObject player;
     private TargetScript targetImage;
+    private ToolScript toolImage;
 
     public float health = 100f;
     public int score = 0;
@@ -85,6 +102,9 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        trackedTarget = Target.UNKNOWN;
+        trackedToolMarker = -1;
+
         GameObject scoreText = GameObject.Find("ScoreNumberGUI");
         GUIScoreText = scoreText.GetComponent<ScoreScript>();
 
@@ -94,43 +114,74 @@ public class PlayerScript : MonoBehaviour {
         defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
         defeatedHUD.SetActive(false);
 
+        onHitHUD = GameObject.Find("OnHitEffectGUI").GetComponent<Image>();
+        onHitColor = onHitHUD.color;
+        onHitColor.a = 0.0f;
+        onHitHUD.color = onHitColor;
+
+        infoTextHUD = GameObject.Find("InfoTextBoxGUI").GetComponent<Text>();
+        infoTextColor = infoTextHUD.color;
+        infoTextColor.a = 0.0f;
+        infoTextHUD.color = infoTextColor;
+
         GUIScoreText.updateScoreValue(score);
 
         markerToPlayer = new Hashtable();
         markerToPhotonID = new Hashtable();
-        markerID = PhotonNetwork.player.ID - 1;
+        markerToTool = new Hashtable();
+
+        //markerID = PhotonNetwork.player.ID - 1;
+
         GameObject go = GameObject.Find("TargetImageGUI");
         Image targetComponent = go.GetComponent<Image>();
         targetImage = targetComponent.GetComponent<TargetScript>();
-        player = GameObject.Find("Player");
 
-        //trackedTarget = Target.UNKNOWN;
+        GameObject go1 = GameObject.Find("ToolImageGUI");
+        Image toolComponent = go1.GetComponent<Image>();
+        toolImage = toolComponent.GetComponent<ToolScript>();
+
+        player = GameObject.Find("Player");
 
         if (PhotonNetwork.isMasterClient == false)
             StartCoroutine(wait());
 
         if (PhotonNetwork.isMasterClient == true)
         {
+            generateToolDistribution();
             generatePlayerAndTargetList();
         }
 
         requestTargetAndPlayer();
 
-        
+        activeTool = Tool.NONE;
     }
 
     public void attack()
     {
         if (!playerDead)
         {
-            int cast_trackedTarget = (int)trackedTarget;
+            Debug.LogError("ToolDebug: trackedToolMarker is: " + trackedToolMarker);
 
-            if (cast_trackedTarget != markerID)
+            int cast_trackedTarget = (int)trackedTarget;                       
+
+            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN))
             {
                 int photonID = (int)markerToPhotonID[cast_trackedTarget];
 
                 Debug.LogError("targetID ist " + photonID);
                 player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, 25.0f);
+            }
+            else if (trackedToolMarker != -1)
+            {
+                Debug.LogError("ToolDebug: active tool before pickup is: " + activeTool);
+
+                Debug.LogError("I am picking up the tool: " + (Tool)markerToTool[trackedToolMarker]);
+                player.GetComponent<PhotonView>().RPC("rpc_changeToolMarker", PhotonTargets.Others, (int)activeTool, trackedToolMarker);
+                Tool tmp = (Tool)markerToTool[trackedToolMarker];
+                changeToolMarker((int)activeTool, trackedToolMarker);
+                activeTool = tmp;
+                toolImage.setImage((int)activeTool);
+                Debug.LogError("ToolDebug: active tool now is: " + activeTool);
             }
         }
     }
@@ -138,7 +189,24 @@ public class PlayerScript : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-       
+        if (onHitColor.a > 0.0f)
+        {
+            onHitColor.a -= 0.02f;
+            onHitHUD.color = onHitColor;
+        }
+        if (infoTextColor.a > 0.0f)
+        {
+            infoTextColor.a -= 0.0075f;
+            infoTextHUD.color = infoTextColor;
+        }
+    }
+
+    public void generateToolDistribution()
+    {
+        for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
+        {
+            markerToTool[i] = (Tool)(i%(int)Tool.MAX_NUM_OF_TOOLS);
+        }
     }
 
     void playerDying(int attackerID)
@@ -149,14 +217,16 @@ public class PlayerScript : MonoBehaviour {
         GameObject go0 = GameObject.Find("HUDCanvasGUI");
         go0.SetActive(false);
         defeatedHUD.SetActive(true);
-        plane = GameObject.Find("player_" + markerID);
-        plane.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+        planePlayer = GameObject.Find("player_" + markerID);
+        planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
     }
 
     [PunRPC]
     public void rpc_playerDied(int markerID, int attackerID, int hisTargetID)
     {
         Debug.LogError("Ich habe gehört, dass " + markerToPlayer[markerID] + " stirbt und sein angreifer war " + attackerID + " und meine targetID ist " + (int)targetPlayer);
+
+        planePlayer = GameObject.Find("player_" + markerID);
 
         if ((int)markerToPlayer[markerID] == (int)targetPlayer)
         {
@@ -165,24 +235,48 @@ public class PlayerScript : MonoBehaviour {
                 targetImage.setImageSuccessful();
                 score++;
                 GUIScoreText.updateScoreValue(score);
+                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsUp.texture;
+                infoTextHUD.text = "You arrested your target!";
+                infoTextColor.a = 1.0f;
+                infoTextHUD.color = infoTextColor;
             }
             else
             {
                 targetImage.setImageUnsuccessful();
+                planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+                infoTextHUD.text = "Someone else arrested your target!";
+                infoTextColor.a = 1.0f;
+                infoTextHUD.color = infoTextColor;
             }
         }
 
         else if ((int)playerID == attackerID)
         {
             if (hisTargetID == (int)playerID)
+            {
                 score += 2;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsUp.texture;
+                infoTextHUD.text = "You arrested your pursuer!";
+                infoTextColor.a = 1.0f;
+                infoTextHUD.color = infoTextColor;
+            }
             else
+            {
                 score--;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsDown.texture;
+                infoTextHUD.text = "You arrested the wrong target!";
+                infoTextColor.a = 1.0f;
+                infoTextHUD.color = infoTextColor;
+            }
             GUIScoreText.updateScoreValue(score);
         }
-
-        plane = GameObject.Find("player_" + markerID);
-        plane.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+        else
+        {
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+            infoTextHUD.text = "Someone in the game was arrested!";
+            infoTextColor.a = 1.0f;
+            infoTextHUD.color = infoTextColor;
+        }
     }
 
     [PunRPC]
@@ -190,6 +284,9 @@ public class PlayerScript : MonoBehaviour {
     {
         if (!playerDead)
         {
+            onHitColor.a = 1.0f;
+            onHitHUD.color = onHitColor;
+
             health -= amount;
             GUIHealthSlider.updateValue(health);
             Debug.LogError("ICH VERLIERE LEBEN und habe noch: " + health);
@@ -205,6 +302,12 @@ public class PlayerScript : MonoBehaviour {
     {
         trackedTarget = (Target)trackedEnemy;
         Debug.LogError("Tracked Target set on " + trackedEnemy + " " + trackedTarget);
+    }
+
+    public void setTrackedToolMarker(int trackedTool)
+    {
+        trackedToolMarker = trackedTool;
+        Debug.LogError("Tracked Tool set on " + trackedTool + " " + trackedToolMarker);
     }
 
     public void generatePlayerAndTargetList()
@@ -279,11 +382,13 @@ public class PlayerScript : MonoBehaviour {
         {
             for (int i = 0; i < markerToPlayer.Count; i++)
             {
-                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, markerToPlayer[i], markerToPhotonID[i]);
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, (int)markerToPlayer[i], (int)markerToPhotonID[i]);
             }
-
+            for (int i = 0; i < markerToTool.Count; i++)
+            {
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerToolRelation", PhotonTargets.All, i, (int)markerToTool[i]);
+            }
             //player.GetComponent<PhotonView>().RPC("printHash", PhotonTargets.All);
-
         }
     }
 
@@ -301,6 +406,27 @@ public class PlayerScript : MonoBehaviour {
     */
 
     [PunRPC]
+    public void rpc_changeToolMarker(int toolID, int marker)
+    {
+        changeToolMarker(toolID, marker);
+    }
+
+    public void changeToolMarker(int toolID, int marker)
+    {
+        planeTool = GameObject.Find("tool_" + marker);
+
+        markerToTool[marker] = (Tool)toolID;
+        if (toolID == (int)Tool.HANDCUFF)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
+        else if (toolID == (int)Tool.INJECTION)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
+        else if (toolID == (int)Tool.ROPE)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
+        else if (toolID == (int)Tool.NONE)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageLooted.texture;
+    }
+
+    [PunRPC]
     public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID, int photonID)
     {
         //Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
@@ -311,28 +437,48 @@ public class PlayerScript : MonoBehaviour {
             markerToPhotonID[markerID] = photonID;
         }
 
-        plane = GameObject.Find("player_" + markerID);
+        planePlayer = GameObject.Find("player_" + markerID);
 
-        if(playersID == 0) 
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
+        if(playersID == 0)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
         else if(playersID == 1)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
         else if (playersID == 2)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
         else if (playersID == 3)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
         else if (playersID == 4)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
         else if (playersID == 5)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
         else if (playersID == 6)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
         else if (playersID == 7)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
         else if (playersID == 8)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
         else if (playersID == 9)
-            plane.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
+    }
+
+    [PunRPC]
+    public void rpc_receiveMarkerToolRelation(int markerID, int toolID)
+    {
+        //Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
+
+        if (PhotonNetwork.isMasterClient == false)
+        {
+            markerToTool[markerID] = toolID;
+        }
+
+        planeTool = GameObject.Find("tool_" + markerID);
+
+        if (toolID == 0)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
+        else if (toolID == 1)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
+        else if (toolID == 2)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
     }
 
     [PunRPC]

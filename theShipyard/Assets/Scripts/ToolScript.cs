@@ -4,41 +4,41 @@ using System.Collections;
 
 public class ToolScript : MonoBehaviour {
 
-    Image toolComponent;
+    public Image toolComponent;
 
-    public Sprite toolUnknownImage;
-    public Sprite toolImage1;
-    public Sprite toolImage2;
-    public Sprite toolImage3;
+    public Sprite toolImageUnknown;
+    public Sprite toolImageHandcuffs;
+    public Sprite toolImageInjection;
+    public Sprite toolImageRope;
 
     // Use this for initialization
-    void Start () {
-        toolComponent = GetComponent<Image>(); //Our image component is the one attached to this gameObject
+    void Awake ()
+    {
         setImageUnknown();
     }
 	
 	// Update is called once per frame
-	void Update () {
+	void Update ()
+    {
 	
 	}
 
-    public void setImageUnknown() //method to set our first image
+    public void setImageUnknown()
     {
-        toolComponent.sprite = toolUnknownImage;
+        Debug.LogError("testerino");
+        toolComponent.sprite = toolImageUnknown;
     }
 
-    public void setImage1() //method to set our first image
+    public void setImage(int toolID) //method to set our image
     {
-        toolComponent.sprite = toolImage1;
-    }
-
-    public void setImage2() //method to set our second image
-    {
-        toolComponent.sprite = toolImage2;
-    }
-
-    public void setImage3() //method to set our third image
-    {
-        toolComponent.sprite = toolImage3;
+        Debug.LogError("ToolDebug: Image gets set to " + toolID);
+        if (toolID == (int)Tool.HANDCUFF)
+            toolComponent.sprite = toolImageHandcuffs;
+        else if (toolID == (int)Tool.INJECTION)
+            toolComponent.sprite = toolImageInjection;
+        else if (toolID == (int)Tool.ROPE)
+            toolComponent.sprite = toolImageRope;
+        else if (toolID == (int)Tool.NONE)
+            toolComponent.sprite = toolImageUnknown;
     }
 }
