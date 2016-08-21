@@ -1,10 +1,13 @@
 * * * 21.08.2016 * * *
 
 Next Steps:
-	[X] Scene in der Spieler ihren Marker auswählen
-	Bei falschem Kill sollte Spieler informiert werden, dass er den falschen getötet hat und wenn er seinen Attentäter töten eine andere Info
 	Waffenschaden einfügen
-	Rausnehmen, dass man seine Waffe gegen eine leere Box tauschen kann
+	Echte Zufallsverteilung der Waffen auf Marker
+
+Heute geschafft:
+	Scene in der Spieler ihren Marker auswählen
+	Bei falschem Kill wird Spieler informiert, dass er den falschen getötet hat und wenn er seinen Attentäter tötet eine andere Info
+	Waffen eingefügt
 
 TODO: Optional:
 If Master: onGUI Restart Game Button
@@ -12,7 +15,8 @@ Exit Button bisher ohne Funktionalität
 Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
 Coole eigengemachte Marker
 Image Targets umbennen mit Indexbeginn bei 0
-Leaderboard nach der Runde
+Leaderboard nach der Runde und Winner screen (Zeichen das Runde vorbei und Option für restart)
+	sobald alle lebenden Personen ihr Target gekillt haben
 Bessere Target Images und Waffen Images
 Code kommentieren
 Code umformulieren und alle tötungs metaphern entfernen -> kein Damage sondern Zeit zum arresten, kein Leben sondern ???
@@ -24,6 +28,12 @@ Nur die Marker Bilder beginnen noch bei 0 vom Namen her. Die ids im Game fangen 
 Daumen hoch und Daumen runter austauschen mit Gefängnishintergrund
 Es sollte mehr als nur Daumen hoch und runter geben. Alle Fälle sollten unterschieden werden mit einem eigenen Bild
 Angriffsbutton auf Interact Button ändern, da wir auch Tools mit diesem Button aufheben
+Master Client Bullets um nur noch einen Room zu kreieren. Behebt Bug von weiter oben dass man nicht gleichzeitig connecten darf
+	Nur Master hat Zugriff auf Slider mit Spieler Zahl
+Entfernen von Debug ausgabe auf Screen mit Target NR udn Player ID
+Info Schrift Zeit länger machen
+Player Slider ändern, dass er wieder ab 2 beginnt
+(ToolImages sollten Schaden angeben)
 
 TODO wenn mehr als 3 Player genutzt werden sollen:
 	Im Player Script enum erweitern

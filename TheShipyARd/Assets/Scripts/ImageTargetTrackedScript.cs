@@ -44,7 +44,8 @@ namespace Vuforia
                                         TrackableBehaviour.Status newStatus)
         {
             if (newStatus == TrackableBehaviour.Status.DETECTED ||
-                newStatus == TrackableBehaviour.Status.TRACKED)
+                newStatus == TrackableBehaviour.Status.TRACKED) //||
+                //newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
             {
                 OnTrackingFound();
             }
@@ -98,7 +99,7 @@ namespace Vuforia
             else if (mTrackableBehaviour.TrackableName == "p3")
             {
                 playerScript.setTrackedTarget(2);
-            }/*
+            }
             else if (mTrackableBehaviour.TrackableName == "w1")
             {
                 playerScript.setTrackedToolMarker(0);
@@ -110,8 +111,7 @@ namespace Vuforia
             else if (mTrackableBehaviour.TrackableName == "w3")
             {
                 playerScript.setTrackedToolMarker(2);
-            }
-            */
+            }  
 
             //Debug.LogError("Started tracking: " + mTrackableBehaviour.TrackableName);
             //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
@@ -124,16 +124,15 @@ namespace Vuforia
             //Debug.LogError("Stopped tracking: " + mTrackableBehaviour.TrackableName);
             //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
             //Debug.LogError("Tracked Tool is now: " + playerScript.trackedTool);
-
-            playerScript.setTrackedTarget((int)Target.UNKNOWN);
-            //playerScript.setTrackedToolMarker(-1);
-
+            
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
             // Disable rendering:
             foreach (Renderer component in rendererComponents)
             {
+                Debug.LogError("RenderingComponents closed are: " + component.name);
+
                 component.enabled = false;
             }
 
@@ -142,6 +141,19 @@ namespace Vuforia
             {
                 component.enabled = false;
             }
+
+
+            if (playerScript == null)
+            {
+                GameObject player = GameObject.Find("Player");
+                playerScript = player.GetComponent<PlayerScript>();
+            }
+            else
+            {
+                playerScript.setTrackedTarget((int)Target.UNKNOWN);
+                playerScript.setTrackedToolMarker(-1);
+            }
+
         }
 
         #endregion // PRIVATE_METHODS

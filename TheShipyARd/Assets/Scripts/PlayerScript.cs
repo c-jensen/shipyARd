@@ -34,6 +34,10 @@ public enum Tool
 
 public class PlayerScript : MonoBehaviour {
 
+    private const float HANDCUFF_DAMAGE = 20.0f;
+    private const float INJECTION_DAMAGE = 50.0f;
+    private const float ROPE_DAMAGE = 10.0f;
+
     //List containing all unused targets
     public static List<Target> availableTargets = new List<Target>();
     //List containing all unused player IDs
@@ -164,15 +168,23 @@ public class PlayerScript : MonoBehaviour {
 
             int cast_trackedTarget = (int)trackedTarget;                       
 
-            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN))
+            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN) && (activeTool != Tool.NONE))
             {
                 int photonID = (int)markerToPhotonID[cast_trackedTarget];
 
                 Debug.LogError("targetID ist " + photonID);
-                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, 25.0f);
+                float finalDamage = 0.0f;
+                if (activeTool == Tool.HANDCUFF)
+                    finalDamage = HANDCUFF_DAMAGE;
+                else if (activeTool == Tool.INJECTION)
+                    finalDamage = INJECTION_DAMAGE;
+                else if (activeTool == Tool.ROPE)
+                    finalDamage = ROPE_DAMAGE;
+                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, finalDamage);
             }
-            else if (trackedToolMarker != -1)
+            else if (trackedToolMarker != -1 && (Tool)markerToTool[trackedToolMarker] != Tool.NONE)
             {
+                Debug.LogError("ToolDebug: Trackedtool marker: " + trackedToolMarker);
                 Debug.LogError("ToolDebug: active tool before pickup is: " + activeTool);
 
                 Debug.LogError("I am picking up the tool: " + (Tool)markerToTool[trackedToolMarker]);
