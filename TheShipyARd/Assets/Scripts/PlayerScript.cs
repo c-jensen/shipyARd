@@ -23,25 +23,15 @@ public enum Target
 
 }
 
-public enum Tool
-{
-    HANDCUFF,
-    INJECTION,
-    ROPE,
-    MAX_NUM_OF_TOOLS,
-    NONE
-}
-
 public class PlayerScript : MonoBehaviour {
-
-    private const float HANDCUFF_DAMAGE = 20.0f;
-    private const float INJECTION_DAMAGE = 50.0f;
-    private const float ROPE_DAMAGE = 10.0f;
 
     //List containing all unused targets
     public static List<Target> availableTargets = new List<Target>();
     //List containing all unused player IDs
     public static List<Target> availablePlayers = new List<Target>();
+
+    private int[] weights;
+    private int weightTotal;
 
     public Sprite playerImage0;
     public Sprite playerImage1;
@@ -65,6 +55,8 @@ public class PlayerScript : MonoBehaviour {
     private Hashtable markerToPlayer;
     private Hashtable markerToPhotonID;
     private Hashtable markerToTool;
+
+    private PlayerToolScript playerTool;
 
     private HealthSliderScript GUIHealthSlider;
     private ScoreScript GUIScoreText;
@@ -96,7 +88,6 @@ public class PlayerScript : MonoBehaviour {
     public bool playerDead = false;
     public Target targetPlayer = Target.UNKNOWN;
     public Target playerID = Target.UNKNOWN;
-    public Tool activeTool = Tool.NONE;
 
     IEnumerator wait()
     {
@@ -157,7 +148,7 @@ public class PlayerScript : MonoBehaviour {
 
         requestTargetAndPlayer();
 
-        activeTool = Tool.NONE;
+        playerTool = new PlayerToolScript(Tool.NONE);
     }
 
     public void attack()
@@ -168,32 +159,26 @@ public class PlayerScript : MonoBehaviour {
 
             int cast_trackedTarget = (int)trackedTarget;                       
 
-            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN) && (activeTool != Tool.NONE))
+            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN) && (playerTool.getToolType() != Tool.NONE))
             {
                 int photonID = (int)markerToPhotonID[cast_trackedTarget];
 
                 Debug.LogError("targetID ist " + photonID);
-                float finalDamage = 0.0f;
-                if (activeTool == Tool.HANDCUFF)
-                    finalDamage = HANDCUFF_DAMAGE;
-                else if (activeTool == Tool.INJECTION)
-                    finalDamage = INJECTION_DAMAGE;
-                else if (activeTool == Tool.ROPE)
-                    finalDamage = ROPE_DAMAGE;
-                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, finalDamage);
+                
+                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, playerTool.getToolDamage());
             }
             else if (trackedToolMarker != -1 && (Tool)markerToTool[trackedToolMarker] != Tool.NONE)
             {
                 Debug.LogError("ToolDebug: Trackedtool marker: " + trackedToolMarker);
-                Debug.LogError("ToolDebug: active tool before pickup is: " + activeTool);
+                Debug.LogError("ToolDebug: active tool before pickup is: " + playerTool.getToolType());
 
                 Debug.LogError("I am picking up the tool: " + (Tool)markerToTool[trackedToolMarker]);
-                player.GetComponent<PhotonView>().RPC("rpc_changeToolMarker", PhotonTargets.Others, (int)activeTool, trackedToolMarker);
-                Tool tmp = (Tool)markerToTool[trackedToolMarker];
-                changeToolMarker((int)activeTool, trackedToolMarker);
-                activeTool = tmp;
-                toolImage.setImage((int)activeTool);
-                Debug.LogError("ToolDebug: active tool now is: " + activeTool);
+                player.GetComponent<PhotonView>().RPC("rpc_changeToolMarker", PhotonTargets.Others, (int)playerTool.getToolType(), trackedToolMarker);
+                PlayerToolScript tmp = new PlayerToolScript((Tool)markerToTool[trackedToolMarker]);
+                changeToolMarker((int)playerTool.getToolType(), trackedToolMarker);
+                playerTool = tmp;
+                toolImage.setImage((int)playerTool.getToolType());
+                Debug.LogError("ToolDebug: active tool now is: " + playerTool.getToolType());
             }
         }
     }
@@ -215,9 +200,23 @@ public class PlayerScript : MonoBehaviour {
 
     public void generateToolDistribution()
     {
+        weights = new int[4]; //number of things
+
+        //weighting of each thing, high number means more occurrance
+        weights[(int)Tool.HANDCUFFS] = 100;
+        weights[(int)Tool.INJECTION] = 1;
+        weights[(int)Tool.ROPE] = 200;
+
+        weightTotal = 0;
+
+        foreach (int w in weights)
+        {
+            weightTotal += w;
+        }
+
         for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
         {
-            markerToTool[i] = (Tool)(i%(int)Tool.MAX_NUM_OF_TOOLS);
+            markerToTool[i] = (Tool)RandomWeighted();
         }
     }
 
@@ -428,7 +427,7 @@ public class PlayerScript : MonoBehaviour {
         planeTool = GameObject.Find("tool_" + marker);
 
         markerToTool[marker] = (Tool)toolID;
-        if (toolID == (int)Tool.HANDCUFF)
+        if (toolID == (int)Tool.HANDCUFFS)
             planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
         else if (toolID == (int)Tool.INJECTION)
             planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
@@ -522,6 +521,18 @@ public class PlayerScript : MonoBehaviour {
         go.transform.position = new Vector3(0.5f, 0.5f, 0.0f);
         guiText.text = "Target NR: " + (int)targetPlayer + " Player ID: " + (int)playerID;
         
+    }
+
+    private int RandomWeighted()
+    {
+        int result = 0, total = 0;
+        int randVal = Random.Range(0, weightTotal + 1);
+        for (result = 0; result < weights.Length; result++)
+        {
+            total += weights[result];
+            if (total >= randVal) break;
+        }
+        return result;
     }
 
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

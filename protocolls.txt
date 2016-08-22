@@ -1,7 +1,7 @@
 * * * 21.08.2016 * * *
 
 Next Steps:
-	Waffenschaden einfügen
+	[X] Waffenschaden einfügen
 	Echte Zufallsverteilung der Waffen auf Marker
 
 Heute geschafft:
@@ -11,7 +11,7 @@ Heute geschafft:
 
 TODO: Optional:
 If Master: onGUI Restart Game Button
-Exit Button bisher ohne Funktionalität
+[X] Exit Button bisher ohne Funktionalität
 Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
 Coole eigengemachte Marker
 Image Targets umbennen mit Indexbeginn bei 0

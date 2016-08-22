@@ -32,7 +32,7 @@ public class ToolScript : MonoBehaviour {
     public void setImage(int toolID) //method to set our image
     {
         Debug.LogError("ToolDebug: Image gets set to " + toolID);
-        if (toolID == (int)Tool.HANDCUFF)
+        if (toolID == (int)Tool.HANDCUFFS)
             toolComponent.sprite = toolImageHandcuffs;
         else if (toolID == (int)Tool.INJECTION)
             toolComponent.sprite = toolImageInjection;
