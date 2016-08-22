@@ -9,12 +9,6 @@ public class MarkerIdScript : MonoBehaviour
     public Slider slider;
     public Text textBox;
 
-    // Use this for initialization
-    void Start()
-    {
-
-    }
-
     // Update is called once per frame
     void Update()
     {

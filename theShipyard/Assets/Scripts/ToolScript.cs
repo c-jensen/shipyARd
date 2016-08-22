@@ -17,21 +17,13 @@ public class ToolScript : MonoBehaviour {
         setImageUnknown();
     }
 	
-	// Update is called once per frame
-	void Update ()
-    {
-	
-	}
-
     public void setImageUnknown()
     {
-        Debug.LogError("testerino");
         toolComponent.sprite = toolImageUnknown;
     }
 
     public void setImage(int toolID) //method to set our image
     {
-        Debug.LogError("ToolDebug: Image gets set to " + toolID);
         if (toolID == (int)Tool.HANDCUFFS)
             toolComponent.sprite = toolImageHandcuffs;
         else if (toolID == (int)Tool.INJECTION)

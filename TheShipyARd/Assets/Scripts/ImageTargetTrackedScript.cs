@@ -16,7 +16,7 @@ namespace Vuforia
 
         #endregion // PRIVATE_MEMBER_VARIABLES
 
-
+        public PlayerReadyScript playerReadyScript;
 
         #region UNTIY_MONOBEHAVIOUR_METHODS
 
@@ -64,12 +64,6 @@ namespace Vuforia
 
         private void OnTrackingFound()
         {
-            if(playerScript == null)
-            {
-                GameObject player = GameObject.Find("Player");
-                playerScript = player.GetComponent<PlayerScript>();
-            }     
-
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
@@ -77,8 +71,6 @@ namespace Vuforia
             // Enable rendering:
             foreach (Renderer component in rendererComponents)
             {
-                Debug.LogError("RenderingComponents are: " + component.name);
-
                 component.enabled = true;
             }
 
@@ -88,51 +80,52 @@ namespace Vuforia
                 component.enabled = true;
             }
 
-            if(mTrackableBehaviour.TrackableName == "p1")
+            if (playerReadyScript.ready)
             {
-                playerScript.setTrackedTarget(0);
-            }
-            else if(mTrackableBehaviour.TrackableName == "p2")
-            {
-                playerScript.setTrackedTarget(1);
-            }
-            else if (mTrackableBehaviour.TrackableName == "p3")
-            {
-                playerScript.setTrackedTarget(2);
-            }
-            else if (mTrackableBehaviour.TrackableName == "w1")
-            {
-                playerScript.setTrackedToolMarker(0);
-            }
-            else if (mTrackableBehaviour.TrackableName == "w2")
-            {
-                playerScript.setTrackedToolMarker(1);
-            }
-            else if (mTrackableBehaviour.TrackableName == "w3")
-            {
-                playerScript.setTrackedToolMarker(2);
-            }  
-
-            //Debug.LogError("Started tracking: " + mTrackableBehaviour.TrackableName);
-            //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
-            //Debug.LogError("Tracked Tool is now: " + playerScript.trackedTool);
+                if (playerScript == null)
+                {
+                    GameObject player = GameObject.Find("Player");
+                    playerScript = player.GetComponent<PlayerScript>();
+                }
+                else
+                {
+                    if (mTrackableBehaviour.TrackableName == "p1")
+                    {
+                        playerScript.setTrackedTarget(0);
+                    }
+                    else if (mTrackableBehaviour.TrackableName == "p2")
+                    {
+                        playerScript.setTrackedTarget(1);
+                    }
+                    else if (mTrackableBehaviour.TrackableName == "p3")
+                    {
+                        playerScript.setTrackedTarget(2);
+                    }
+                    else if (mTrackableBehaviour.TrackableName == "w1")
+                    {
+                        playerScript.setTrackedToolMarker(0);
+                    }
+                    else if (mTrackableBehaviour.TrackableName == "w2")
+                    {
+                        playerScript.setTrackedToolMarker(1);
+                    }
+                    else if (mTrackableBehaviour.TrackableName == "w3")
+                    {
+                        playerScript.setTrackedToolMarker(2);
+                    }
+                }
+            }      
         }
 
 
         private void OnTrackingLost()
-        {
-            //Debug.LogError("Stopped tracking: " + mTrackableBehaviour.TrackableName);
-            //Debug.LogError("Tracked Target is now: " + playerScript.trackedTarget);
-            //Debug.LogError("Tracked Tool is now: " + playerScript.trackedTool);
-            
+        {            
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
             // Disable rendering:
             foreach (Renderer component in rendererComponents)
             {
-                Debug.LogError("RenderingComponents closed are: " + component.name);
-
                 component.enabled = false;
             }
 
@@ -142,20 +135,20 @@ namespace Vuforia
                 component.enabled = false;
             }
 
-
-            if (playerScript == null)
+            if (playerReadyScript.ready)
             {
-                GameObject player = GameObject.Find("Player");
-                playerScript = player.GetComponent<PlayerScript>();
+                if (playerScript == null)
+                {
+                    GameObject player = GameObject.Find("Player");
+                    playerScript = player.GetComponent<PlayerScript>();
+                }
+                else
+                {
+                    playerScript.setTrackedTarget((int)Target.UNKNOWN);
+                    playerScript.setTrackedToolMarker(-1);
+                }
             }
-            else
-            {
-                playerScript.setTrackedTarget((int)Target.UNKNOWN);
-                playerScript.setTrackedToolMarker(-1);
-            }
-
         }
-
         #endregion // PRIVATE_METHODS
     }
 }

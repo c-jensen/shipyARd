@@ -27,13 +27,11 @@ public class TargetScript : MonoBehaviour {
 
     public void setImageUnknown() //method to set our first image
     {
-        Debug.LogError("Unknown Image set");
         targetComponent.sprite = targetImageUnknown;
     }
 
     public void setImage0() //method to set our first image
     {
-        Debug.LogError("Image 0 set");
         targetComponent.sprite = targetImage0;
     }
 

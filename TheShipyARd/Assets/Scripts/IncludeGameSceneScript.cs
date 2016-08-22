@@ -9,10 +9,4 @@ public class IncludeGameSceneScript : MonoBehaviour
     {
         Application.LoadLevelAdditive("GameScene");
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

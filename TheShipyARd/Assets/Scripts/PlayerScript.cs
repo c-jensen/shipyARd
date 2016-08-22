@@ -30,8 +30,8 @@ public class PlayerScript : MonoBehaviour {
     //List containing all unused player IDs
     public static List<Target> availablePlayers = new List<Target>();
 
-    private int[] weights;
-    private int weightTotal;
+    public MarkerDistributionScript markerDistribution;
+    public PlayerFunctionsScript playerFunctions;
 
     public Sprite playerImage0;
     public Sprite playerImage1;
@@ -52,35 +52,32 @@ public class PlayerScript : MonoBehaviour {
     public Sprite toolImageRope;
     public Sprite toolImageLooted;
 
-    private Hashtable markerToPlayer;
-    private Hashtable markerToPhotonID;
-    private Hashtable markerToTool;
+    public PlayerToolScript playerTool;
 
-    private PlayerToolScript playerTool;
+    public HealthSliderScript GUIHealthSlider;
+    public ScoreScript GUIScoreText;
 
-    private HealthSliderScript GUIHealthSlider;
-    private ScoreScript GUIScoreText;
+    public GameObject defeatedHUD;
+    public Image onHitHUD;
+    public Text infoTextHUD;
 
-    GameObject defeatedHUD;
-    Image onHitHUD;
-    Text infoTextHUD;
-
-    Color onHitColor;
-    Color infoTextColor;
+    public Color onHitColor;
+    public Color infoTextColor;
 
     public static int markerID;
-    private GameObject planePlayer;
-    private GameObject planeTool;
 
-    private Target trackedTarget;
+    public GameObject planePlayer;
+    public GameObject planeTool;
 
-    private int trackedToolMarker;
+    public Target trackedTarget;
+
+    public int trackedToolMarker;
    
-    private int markerPlayerCounter = 0;
+    public int markerPlayerCounter = 0;
 
-    private GameObject player;
-    private TargetScript targetImage;
-    private ToolScript toolImage;
+    public GameObject player;
+    public TargetScript targetImage;
+    public ToolScript toolImage;
 
     public float health = 100f;
     public int score = 0;
@@ -94,12 +91,25 @@ public class PlayerScript : MonoBehaviour {
         yield return new WaitForSeconds(15.0f);
     }
 
-    // Use this for initialization
-    void Start()
+    void Awake()
     {
+        playerFunctions = new PlayerFunctionsScript(this);
+
+        markerDistribution = new MarkerDistributionScript();
+
         trackedTarget = Target.UNKNOWN;
         trackedToolMarker = -1;
 
+        playerTool = new PlayerToolScript(Tool.NONE);
+
+        GameObject go = GameObject.Find("RenderingSceneScripts");
+        PlayerReadyScript playerReady = go.GetComponent<PlayerReadyScript>();
+        playerReady.ready = true;
+    }
+
+    // Use this for initialization
+    void Start()
+    {       
         GameObject scoreText = GameObject.Find("ScoreNumberGUI");
         GUIScoreText = scoreText.GetComponent<ScoreScript>();
 
@@ -121,12 +131,6 @@ public class PlayerScript : MonoBehaviour {
 
         GUIScoreText.updateScoreValue(score);
 
-        markerToPlayer = new Hashtable();
-        markerToPhotonID = new Hashtable();
-        markerToTool = new Hashtable();
-
-        //markerID = PhotonNetwork.player.ID - 1;
-
         GameObject go = GameObject.Find("TargetImageGUI");
         Image targetComponent = go.GetComponent<Image>();
         targetImage = targetComponent.GetComponent<TargetScript>();
@@ -142,47 +146,13 @@ public class PlayerScript : MonoBehaviour {
 
         if (PhotonNetwork.isMasterClient == true)
         {
-            generateToolDistribution();
-            generatePlayerAndTargetList();
+            markerDistribution.generateToolDistribution();
+            playerFunctions.generatePlayerAndTargetList();
         }
 
-        requestTargetAndPlayer();
-
-        playerTool = new PlayerToolScript(Tool.NONE);
+        playerFunctions.requestTargetAndPlayer();
     }
-
-    public void attack()
-    {
-        if (!playerDead)
-        {
-            Debug.LogError("ToolDebug: trackedToolMarker is: " + trackedToolMarker);
-
-            int cast_trackedTarget = (int)trackedTarget;                       
-
-            if (cast_trackedTarget != markerID && (cast_trackedTarget != (int)Target.UNKNOWN) && (playerTool.getToolType() != Tool.NONE))
-            {
-                int photonID = (int)markerToPhotonID[cast_trackedTarget];
-
-                Debug.LogError("targetID ist " + photonID);
-                
-                player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerID, playerTool.getToolDamage());
-            }
-            else if (trackedToolMarker != -1 && (Tool)markerToTool[trackedToolMarker] != Tool.NONE)
-            {
-                Debug.LogError("ToolDebug: Trackedtool marker: " + trackedToolMarker);
-                Debug.LogError("ToolDebug: active tool before pickup is: " + playerTool.getToolType());
-
-                Debug.LogError("I am picking up the tool: " + (Tool)markerToTool[trackedToolMarker]);
-                player.GetComponent<PhotonView>().RPC("rpc_changeToolMarker", PhotonTargets.Others, (int)playerTool.getToolType(), trackedToolMarker);
-                PlayerToolScript tmp = new PlayerToolScript((Tool)markerToTool[trackedToolMarker]);
-                changeToolMarker((int)playerTool.getToolType(), trackedToolMarker);
-                playerTool = tmp;
-                toolImage.setImage((int)playerTool.getToolType());
-                Debug.LogError("ToolDebug: active tool now is: " + playerTool.getToolType());
-            }
-        }
-    }
-
+    
     // Update is called once per frame
     void Update()
     {
@@ -196,50 +166,189 @@ public class PlayerScript : MonoBehaviour {
             infoTextColor.a -= 0.0075f;
             infoTextHUD.color = infoTextColor;
         }
+    }  
+
+    public void setTrackedTarget(int trackedEnemy)
+    {
+        trackedTarget = (Target)trackedEnemy;
     }
 
-    public void generateToolDistribution()
+    public void setTrackedToolMarker(int trackedTool)
     {
-        weights = new int[4]; //number of things
-
-        //weighting of each thing, high number means more occurrance
-        weights[(int)Tool.HANDCUFFS] = 100;
-        weights[(int)Tool.INJECTION] = 1;
-        weights[(int)Tool.ROPE] = 200;
-
-        weightTotal = 0;
-
-        foreach (int w in weights)
-        {
-            weightTotal += w;
-        }
-
-        for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
-        {
-            markerToTool[i] = (Tool)RandomWeighted();
-        }
+        trackedToolMarker = trackedTool;
     }
 
-    void playerDying(int attackerID)
+    public List<Target> getAvailableTargets()
     {
-        playerDead = true;
-        player.GetComponent<PhotonView>().RPC("rpc_playerDied", PhotonTargets.Others, markerID, attackerID, (int)targetPlayer);
-        Debug.LogError("Ich sterbe und der Mörder ist " + attackerID);
-        GameObject go0 = GameObject.Find("HUDCanvasGUI");
-        go0.SetActive(false);
-        defeatedHUD.SetActive(true);
+        return availableTargets;
+    }
+
+    public List<Target> getAvailablePlayers()
+    {
+        return availablePlayers;
+    }
+
+    public int getMarkerID()
+    {
+        return markerID;
+    }
+
+    //This function is requiered though empty
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){}
+
+
+    //PUNRPC Section
+
+    [PunRPC]
+    public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID, int photonID)
+    {
+        if (PhotonNetwork.isMasterClient == false)
+        {
+            markerDistribution.setMarkerToPlayer(markerID, playersID);
+            markerDistribution.setMarkerToPhotonID(markerID, photonID);
+        }
+
         planePlayer = GameObject.Find("player_" + markerID);
-        planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+
+        if (playersID == 0)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
+        else if (playersID == 1)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
+        else if (playersID == 2)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
+        else if (playersID == 3)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
+        else if (playersID == 4)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
+        else if (playersID == 5)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
+        else if (playersID == 6)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
+        else if (playersID == 7)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
+        else if (playersID == 8)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
+        else if (playersID == 9)
+            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
+    }
+
+    [PunRPC]
+    public void rpc_receiveMarkerToolRelation(int markerID, int toolID)
+    {
+        if (PhotonNetwork.isMasterClient == false)
+        {
+            markerDistribution.setMarkerToTool(markerID, (Tool)toolID);
+        }
+
+        planeTool = GameObject.Find("tool_" + markerID);
+
+        if (toolID == 0)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
+        else if (toolID == 1)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
+        else if (toolID == 2)
+            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
+    }
+
+    [PunRPC]
+    public void rpc_receiveTarget(int target, PhotonMessageInfo info)
+    {
+        targetPlayer = (Target)target;
+
+        if (target == 0)
+            targetImage.setImage0();
+        else if (target == 1)
+            targetImage.setImage1();
+        else if (target == 2)
+            targetImage.setImage2();
+        else if (target == 3)
+            targetImage.setImage3();
+        else if (target == 4)
+            targetImage.setImage4();
+    }
+
+    [PunRPC]
+    public void rpc_receivePlayer(int player, PhotonMessageInfo info)
+    {
+        playerID = (Target)player;
+    }
+
+    [PunRPC]
+    public void rpc_changeToolMarker(int toolID, int marker)
+    {
+        playerFunctions.changeToolMarker(toolID, marker);
+    }
+
+    [PunRPC]
+    public void rpc_sendTargetAndPlayerToClient(int id, int marker)
+    {
+        if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
+        {
+            //send the target and player to the client
+            int clientTarget = (int)availableTargets[0];
+            int clientPlayer = (int)availablePlayers[0];
+
+            if (clientTarget == clientPlayer)
+            {
+                if (availablePlayers.Count >= 2)
+                {
+                    clientPlayer = (int)availablePlayers[1];
+                    availableTargets.RemoveAt(0);
+                    availablePlayers.RemoveAt(1);
+                }
+            }
+            else
+            {
+                availableTargets.RemoveAt(0);
+                availablePlayers.RemoveAt(0);
+            }
+
+            markerDistribution.setMarkerToPlayer(marker, clientPlayer);
+            markerDistribution.setMarkerToPhotonID(marker, id);
+
+            player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
+            player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
+
+            markerPlayerCounter++;
+        }
+
+        if (markerPlayerCounter >= NetworkManager.expectedNumberOfPlayers)
+        {
+            for (int i = 0; i < markerDistribution.getMarkerToPlayerCount(); i++)
+            {
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, markerDistribution.getMarkerToPlayer(i), markerDistribution.getMarkerToPhotonID(i));
+            }
+            for (int i = 0; i < markerDistribution.getMarkerToToolCount(); i++)
+            {
+                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerToolRelation", PhotonTargets.All, i, (int)markerDistribution.getMarkerToTool(i));
+            }
+        }
+    }
+
+    [PunRPC]
+    public void rpc_takeDamage(int attackerID, float amount)
+    {
+        if (!playerDead)
+        {
+            onHitColor.a = 1.0f;
+            onHitHUD.color = onHitColor;
+
+            health -= amount;
+            GUIHealthSlider.updateValue(health);
+
+            if (health <= 0)
+            {
+                playerFunctions.playerDying(attackerID);
+            }
+        }
     }
 
     [PunRPC]
     public void rpc_playerDied(int markerID, int attackerID, int hisTargetID)
     {
-        Debug.LogError("Ich habe gehört, dass " + markerToPlayer[markerID] + " stirbt und sein angreifer war " + attackerID + " und meine targetID ist " + (int)targetPlayer);
-
         planePlayer = GameObject.Find("player_" + markerID);
 
-        if ((int)markerToPlayer[markerID] == (int)targetPlayer)
+        if (markerDistribution.getMarkerToPlayer(markerID) == (int)targetPlayer)
         {
             if ((int)playerID == attackerID)
             {
@@ -288,255 +397,5 @@ public class PlayerScript : MonoBehaviour {
             infoTextColor.a = 1.0f;
             infoTextHUD.color = infoTextColor;
         }
-    }
-
-    [PunRPC]
-    public void rpc_takeDamage(int attackerID, float amount)
-    {
-        if (!playerDead)
-        {
-            onHitColor.a = 1.0f;
-            onHitHUD.color = onHitColor;
-
-            health -= amount;
-            GUIHealthSlider.updateValue(health);
-            Debug.LogError("ICH VERLIERE LEBEN und habe noch: " + health);
-
-            if (health <= 0)
-            {
-                playerDying(attackerID);
-            }
-        }
-    }
-
-    public void setTrackedTarget(int trackedEnemy)
-    {
-        trackedTarget = (Target)trackedEnemy;
-        Debug.LogError("Tracked Target set on " + trackedEnemy + " " + trackedTarget);
-    }
-
-    public void setTrackedToolMarker(int trackedTool)
-    {
-        trackedToolMarker = trackedTool;
-        Debug.LogError("Tracked Tool set on " + trackedTool + " " + trackedToolMarker);
-    }
-
-    public void generatePlayerAndTargetList()
-    {
-        //Add all target to a list
-        for (int i = 0; i < NetworkManager.expectedNumberOfPlayers; i++)
-        {
-            availableTargets.Add((Target)i);
-            availablePlayers.Add((Target)i);
-        }
-        
-        //Shuffle lists
-        for (int i = 0; i < availableTargets.Count; i++)
-        {
-            Target temp = availableTargets[i];
-            int randomIndex = Random.Range(i, availableTargets.Count-1);
-            availableTargets[i] = availableTargets[randomIndex];
-            availableTargets[randomIndex] = temp;
-        }
-
-        //copy list
-        for (int i = 0; i < availableTargets.Count; i++)
-        {
-            availablePlayers[i] = availableTargets[i];
-        }
-
-        availablePlayers.Reverse();
-
-    }
-
-    public void requestTargetAndPlayer()
-    {
-        player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player.ID, markerID);
-
-        //player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);
-    }
-
-    [PunRPC]
-    public void rpc_sendTargetAndPlayerToClient(int id, int marker)
-    {
-        if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
-        {
-            //send the target and player to the client
-            int clientTarget = (int)availableTargets[0];
-            int clientPlayer = (int)availablePlayers[0];
-
-            if (clientTarget == clientPlayer)
-            {
-                if (availablePlayers.Count >= 2)
-                {
-                    clientPlayer = (int)availablePlayers[1];
-                    availableTargets.RemoveAt(0);
-                    availablePlayers.RemoveAt(1);
-                }
-            }
-            else
-            {
-                availableTargets.RemoveAt(0);
-                availablePlayers.RemoveAt(0);
-            }
-
-            markerToPlayer[marker] = clientPlayer;
-            markerToPhotonID[marker] = id;
-
-            player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
-            player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
-
-            markerPlayerCounter++;
-        }
-
-        if (markerPlayerCounter >= NetworkManager.expectedNumberOfPlayers)
-        {
-            for (int i = 0; i < markerToPlayer.Count; i++)
-            {
-                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerPlayerRelation", PhotonTargets.All, i, (int)markerToPlayer[i], (int)markerToPhotonID[i]);
-            }
-            for (int i = 0; i < markerToTool.Count; i++)
-            {
-                player.GetComponent<PhotonView>().RPC("rpc_receiveMarkerToolRelation", PhotonTargets.All, i, (int)markerToTool[i]);
-            }
-            //player.GetComponent<PhotonView>().RPC("printHash", PhotonTargets.All);
-        }
-    }
-
-    /*
-    [PunRPC]
-    public void printHash()
-    {
-        for (int i = 0; i < markerToPlayer.Count; i++)
-        {
-            Debug.LogError("Marker: " + i);
-            Debug.LogError("MarkerToPlayer: " + markerToPlayer[i]);
-            Debug.LogError("MarkertoPhotonID " + markerToPhotonID[i]);
-        }
-    }
-    */
-
-    [PunRPC]
-    public void rpc_changeToolMarker(int toolID, int marker)
-    {
-        changeToolMarker(toolID, marker);
-    }
-
-    public void changeToolMarker(int toolID, int marker)
-    {
-        planeTool = GameObject.Find("tool_" + marker);
-
-        markerToTool[marker] = (Tool)toolID;
-        if (toolID == (int)Tool.HANDCUFFS)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
-        else if (toolID == (int)Tool.INJECTION)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
-        else if (toolID == (int)Tool.ROPE)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
-        else if (toolID == (int)Tool.NONE)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageLooted.texture;
-    }
-
-    [PunRPC]
-    public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID, int photonID)
-    {
-        //Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
-
-        if(PhotonNetwork.isMasterClient == false)
-        {
-            markerToPlayer[markerID] = playersID;
-            markerToPhotonID[markerID] = photonID;
-        }
-
-        planePlayer = GameObject.Find("player_" + markerID);
-
-        if(playersID == 0)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
-        else if(playersID == 1)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
-        else if (playersID == 2)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
-        else if (playersID == 3)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
-        else if (playersID == 4)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
-        else if (playersID == 5)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
-        else if (playersID == 6)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
-        else if (playersID == 7)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
-        else if (playersID == 8)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
-        else if (playersID == 9)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
-    }
-
-    [PunRPC]
-    public void rpc_receiveMarkerToolRelation(int markerID, int toolID)
-    {
-        //Debug.LogError("RECEIVE MarkerID: " + markerID + " playerID: " + playersID);
-
-        if (PhotonNetwork.isMasterClient == false)
-        {
-            markerToTool[markerID] = toolID;
-        }
-
-        planeTool = GameObject.Find("tool_" + markerID);
-
-        if (toolID == 0)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageHandcuffs.texture;
-        else if (toolID == 1)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageInjection.texture;
-        else if (toolID == 2)
-            planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
-    }
-
-    [PunRPC]
-    public void rpc_receiveTarget(int target, PhotonMessageInfo info)
-    {
-        targetPlayer = (Target) target;
-
-        if (target == 0)
-            targetImage.setImage0();
-        else if (target == 1)
-            targetImage.setImage1();
-        else if (target == 2)
-            targetImage.setImage2();
-        else if (target == 3)
-            targetImage.setImage3();
-        else if (target == 4)
-            targetImage.setImage4();
-    }
-
-    [PunRPC]
-    public void rpc_receivePlayer(int player, PhotonMessageInfo info)
-    {
-        playerID = (Target) player;
-
-        GameObject go = new GameObject();
-        go.AddComponent<GUIText>();
-
-        GUIText guiText = go.GetComponent<GUIText>();
-        go.transform.position = new Vector3(0.5f, 0.5f, 0.0f);
-        guiText.text = "Target NR: " + (int)targetPlayer + " Player ID: " + (int)playerID;
-        
-    }
-
-    private int RandomWeighted()
-    {
-        int result = 0, total = 0;
-        int randVal = Random.Range(0, weightTotal + 1);
-        for (result = 0; result < weights.Length; result++)
-        {
-            total += weights[result];
-            if (total >= randVal) break;
-        }
-        return result;
-    }
-
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-
     }
 }

@@ -12,7 +12,7 @@ public class NetworkManager : Photon.PunBehaviour
 
     IEnumerator waitRoutine()
     {
-        yield return new WaitForSeconds(5.0f);
+        yield return new WaitForSeconds(15.0f);
     }
 
     void Start()
@@ -49,26 +49,15 @@ public class NetworkManager : Photon.PunBehaviour
 
     public override void OnJoinedRoom()
     {
-        Debug.LogError("Room joined");
-
         isConnected = true;
 
         //the first client becomes the master
         if (PhotonNetwork.masterClient == null)
-        {
             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
-            Debug.LogError("master is set");
-        }
-
-        if(PhotonNetwork.isMasterClient == true)
-            Debug.LogError("i am da fuckin mastaaaaa");
-
-
     }
 
     void OnPhotonRandomJoinFailed()
     {
-        Debug.Log("Can't join random room!");
         PhotonNetwork.CreateRoom(null); //null could be any room name id
     }   
 }

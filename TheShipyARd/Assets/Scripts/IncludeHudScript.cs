@@ -9,10 +9,4 @@ public class IncludeHudScript : MonoBehaviour
     {
         Application.LoadLevelAdditive("HudScene");
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }
