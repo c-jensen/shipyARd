@@ -1,4 +1,10 @@
 sceneSetups:
-- path: Assets/Scenes/GameScene.unity
+- path: Assets/Scenes/RenderingScene.unity
   isLoaded: 1
   isActive: 1
+- path: Assets/Scenes/GameScene.unity
+  isLoaded: 1
+  isActive: 0
+- path: Assets/Scenes/HudScene.unity
+  isLoaded: 1
+  isActive: 0

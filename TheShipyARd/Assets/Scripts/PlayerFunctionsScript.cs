@@ -41,7 +41,8 @@ public class PlayerFunctionsScript : MonoBehaviour {
         go0.SetActive(false);
         playerScript.defeatedHUD.SetActive(true);
         playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID());
-        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = playerScript.playerDeadImage.texture;
+        Texture status = Resources.Load("success_arrested_player_" + playerScript.playerID.ToString()) as Texture;
+        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = status;
     }
 
 

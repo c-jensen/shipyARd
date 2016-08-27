@@ -43,9 +43,6 @@ public class PlayerScript : MonoBehaviour {
     public Sprite playerImage7;
     public Sprite playerImage8;
     public Sprite playerImage9;
-    public Sprite playerDeadImage;
-    public Sprite thumbsUp;
-    public Sprite thumbsDown;
 
     public Sprite toolImageHandcuffs;
     public Sprite toolImageInjection;
@@ -348,51 +345,63 @@ public class PlayerScript : MonoBehaviour {
     {
         planePlayer = GameObject.Find("player_" + markerID);
 
+        //If arrested player was our target
         if (markerDistribution.getMarkerToPlayer(markerID) == (int)targetPlayer)
         {
+            //If arrested player was our own target and arrested by us
             if ((int)playerID == attackerID)
             {
                 targetImage.setImageSuccessful();
                 score++;
                 GUIScoreText.updateScoreValue(score);
-                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsUp.texture;
+                Texture status = Resources.Load("success_arrested_player_" + markerID.ToString()) as Texture;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
                 infoTextHUD.text = "You arrested your target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
             }
+            //If arrested player was our own target and was not arrested by us
             else
             {
                 targetImage.setImageUnsuccessful();
-                planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+                Texture status = Resources.Load("failed_arrested_player_" + markerID.ToString()) as Texture;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
                 infoTextHUD.text = "Someone else arrested your target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
             }
         }
 
+        //If we were the attacker
         else if ((int)playerID == attackerID)
         {
+            //If arrested player was our pursuer
             if (hisTargetID == (int)playerID)
             {
                 score += 2;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsUp.texture;
+                Texture status = Resources.Load("success_arrested_player_" + markerID.ToString()) as Texture;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
                 infoTextHUD.text = "You arrested your pursuer!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
             }
+            //If the arrested player was either our target nor our pursuer
             else
             {
                 score--;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = thumbsDown.texture;
+                Texture status = Resources.Load("failed_arrested_player_" + markerID.ToString()) as Texture;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
                 infoTextHUD.text = "You arrested the wrong target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
             }
             GUIScoreText.updateScoreValue(score);
         }
+        //If we were not the attacker
         else
         {
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerDeadImage.texture;
+            Texture status = Resources.Load("arrested_player_" + markerID.ToString()) as Texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = status;
             infoTextHUD.text = "Someone in the game was arrested!";
             infoTextColor.a = 1.0f;
             infoTextHUD.color = infoTextColor;
