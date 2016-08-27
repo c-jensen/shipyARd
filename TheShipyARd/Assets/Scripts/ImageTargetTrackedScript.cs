@@ -90,27 +90,27 @@ namespace Vuforia
                 }
                 else
                 {
-                    if (mTrackableBehaviour.TrackableName == "p1")
+                    if (mTrackableBehaviour.TrackableName == "p0")
                     {
                         playerScript.setTrackedTarget(0);
                     }
-                    else if (mTrackableBehaviour.TrackableName == "p2")
+                    else if (mTrackableBehaviour.TrackableName == "p1")
                     {
                         playerScript.setTrackedTarget(1);
                     }
-                    else if (mTrackableBehaviour.TrackableName == "p3")
+                    else if (mTrackableBehaviour.TrackableName == "p2")
                     {
                         playerScript.setTrackedTarget(2);
                     }
-                    else if (mTrackableBehaviour.TrackableName == "w1")
+                    else if (mTrackableBehaviour.TrackableName == "t0")
                     {
                         playerScript.setTrackedToolMarker(0);
                     }
-                    else if (mTrackableBehaviour.TrackableName == "w2")
+                    else if (mTrackableBehaviour.TrackableName == "t1")
                     {
                         playerScript.setTrackedToolMarker(1);
                     }
-                    else if (mTrackableBehaviour.TrackableName == "w3")
+                    else if (mTrackableBehaviour.TrackableName == "t2")
                     {
                         playerScript.setTrackedToolMarker(2);
                     }

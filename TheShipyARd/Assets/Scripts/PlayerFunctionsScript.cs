@@ -12,6 +12,7 @@ public class PlayerFunctionsScript : MonoBehaviour {
 
     public void attack()
     {
+        Debug.LogError("Test");
         if (!playerScript.playerDead)
         {
             int cast_trackedTarget = (int)playerScript.trackedTarget;
