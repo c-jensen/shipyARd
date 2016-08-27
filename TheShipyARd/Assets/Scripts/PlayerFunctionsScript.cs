@@ -12,7 +12,6 @@ public class PlayerFunctionsScript : MonoBehaviour {
 
     public void attack()
     {
-        Debug.LogError("Test");
         if (!playerScript.playerDead)
         {
             int cast_trackedTarget = (int)playerScript.trackedTarget;
@@ -42,8 +41,7 @@ public class PlayerFunctionsScript : MonoBehaviour {
         go0.SetActive(false);
         playerScript.defeatedHUD.SetActive(true);
         playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID());
-        Texture status = Resources.Load("success_arrested_player_" + playerScript.playerID.ToString()) as Texture;
-        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/arrested_player_" + playerScript.playerID.ToString(), typeof(Texture2D)) as Texture2D;
     }
 
 

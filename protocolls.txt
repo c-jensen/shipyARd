@@ -1,21 +1,19 @@
-* * * 22.08.2016 * * *
+﻿* * * 27.08.2016 * * *
+
 Next Steps:
 	Kommentare einfügen
 	Variablen umbennen
 	public private changes
 	Playerzahl auf 10 erhöhen
 		Neue Marker ausdrucken
-	Neue Texturen einfügen
+	Healthicon austauschen
 	Scoreboard am Ende
 	Master bekommt ReplayButton
 
 Heute geschafft:
-	Klassenarchitektur umgestellt
-	Finale Texturen und Images erstellt
-	Echte Zufallsverteilung der Waffen auf Marker
-	ExitButton Funktionalität eingefügt
+	Neue Bilder/Icons eingefügt
 
-	TODO: Optional:
+TODO: Optional:
 	If Master: onGUI Restart Game Button
 	Bug beheben, das man nicht ins Spiel kommt, wenn man genau gleichzeitig connected
 	Leaderboard nach der Runde und Winner screen (Zeichen das Runde vorbei und Option für restart)
@@ -32,6 +30,7 @@ Heute geschafft:
 	Info Schrift Zeit länger machen
 	Player Slider ändern, dass er wieder ab 2 beginnt
 	Im HUD Herzlogo gegen Gitterlogo austauschen
+	MarkerID Slider max auf 9 setzen
 
 	TODO wenn mehr als 3 Player genutzt werden sollen:
 		Im Player Script enum erweitern
@@ -47,6 +46,23 @@ Heute geschafft:
 			Mehr Waffen, andere Bonus Items, Power Ups
 			2D Personenbilder und Waffen durch animierte 3D Modelle ersetzen
 			Testen ob es mehr Spaß macht die Waffen zufällig zu verteilen
+
+* * * 22.08.2016 * * *
+Next Steps:
+	Kommentare einfügen
+	Variablen umbennen
+	public private changes
+	Playerzahl auf 10 erhöhen
+		Neue Marker ausdrucken
+	Neue Texturen einfügen
+	Scoreboard am Ende
+	Master bekommt ReplayButton
+
+Heute geschafft:
+	Klassenarchitektur umgestellt
+	Finale Texturen und Images erstellt
+	Echte Zufallsverteilung der Waffen auf Marker
+	ExitButton Funktionalität eingefügt	
 
 * * * 21.08.2016 * * *
 

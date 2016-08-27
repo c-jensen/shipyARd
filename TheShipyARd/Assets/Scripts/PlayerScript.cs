@@ -344,6 +344,7 @@ public class PlayerScript : MonoBehaviour {
     public void rpc_playerDied(int markerID, int attackerID, int hisTargetID)
     {
         planePlayer = GameObject.Find("player_" + markerID);
+        int hisPlayerID = markerDistribution.getMarkerToPlayer(markerID);
 
         //If arrested player was our target
         if (markerDistribution.getMarkerToPlayer(markerID) == (int)targetPlayer)
@@ -354,8 +355,7 @@ public class PlayerScript : MonoBehaviour {
                 targetImage.setImageSuccessful();
                 score++;
                 GUIScoreText.updateScoreValue(score);
-                Texture status = Resources.Load("success_arrested_player_" + markerID.ToString()) as Texture;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/success_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
                 infoTextHUD.text = "You arrested your target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
@@ -364,8 +364,7 @@ public class PlayerScript : MonoBehaviour {
             else
             {
                 targetImage.setImageUnsuccessful();
-                Texture status = Resources.Load("failed_arrested_player_" + markerID.ToString()) as Texture;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/failed_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
                 infoTextHUD.text = "Someone else arrested your target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
@@ -379,8 +378,7 @@ public class PlayerScript : MonoBehaviour {
             if (hisTargetID == (int)playerID)
             {
                 score += 2;
-                Texture status = Resources.Load("success_arrested_player_" + markerID.ToString()) as Texture;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/success_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
                 infoTextHUD.text = "You arrested your pursuer!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
@@ -389,8 +387,7 @@ public class PlayerScript : MonoBehaviour {
             else
             {
                 score--;
-                Texture status = Resources.Load("failed_arrested_player_" + markerID.ToString()) as Texture;
-                planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+                planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/failed_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
                 infoTextHUD.text = "You arrested the wrong target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
@@ -400,8 +397,7 @@ public class PlayerScript : MonoBehaviour {
         //If we were not the attacker
         else
         {
-            Texture status = Resources.Load("arrested_player_" + markerID.ToString()) as Texture;
-            planePlayer.GetComponent<Renderer>().material.mainTexture = status;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
             infoTextHUD.text = "Someone in the game was arrested!";
             infoTextColor.a = 1.0f;
             infoTextHUD.color = infoTextColor;

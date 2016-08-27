@@ -45,7 +45,7 @@ namespace Vuforia
         {
             if (newStatus == TrackableBehaviour.Status.DETECTED ||
                 newStatus == TrackableBehaviour.Status.TRACKED) //||
-                //newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
+                                                                //newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
             {
                 OnTrackingFound();
             }
@@ -64,7 +64,6 @@ namespace Vuforia
 
         private void OnTrackingFound()
         {
-            Debug.LogError("Tracked " + mTrackableBehaviour.TrackableName);
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
@@ -88,39 +87,36 @@ namespace Vuforia
                     GameObject player = GameObject.Find("Player");
                     playerScript = player.GetComponent<PlayerScript>();
                 }
-                else
+                if (mTrackableBehaviour.TrackableName == "p0")
                 {
-                    if (mTrackableBehaviour.TrackableName == "p0")
-                    {
-                        playerScript.setTrackedTarget(0);
-                    }
-                    else if (mTrackableBehaviour.TrackableName == "p1")
-                    {
-                        playerScript.setTrackedTarget(1);
-                    }
-                    else if (mTrackableBehaviour.TrackableName == "p2")
-                    {
-                        playerScript.setTrackedTarget(2);
-                    }
-                    else if (mTrackableBehaviour.TrackableName == "t0")
-                    {
-                        playerScript.setTrackedToolMarker(0);
-                    }
-                    else if (mTrackableBehaviour.TrackableName == "t1")
-                    {
-                        playerScript.setTrackedToolMarker(1);
-                    }
-                    else if (mTrackableBehaviour.TrackableName == "t2")
-                    {
-                        playerScript.setTrackedToolMarker(2);
-                    }
+                    playerScript.setTrackedTarget(0);
                 }
-            }      
+                else if (mTrackableBehaviour.TrackableName == "p1")
+                {
+                    playerScript.setTrackedTarget(1);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p2")
+                {
+                    playerScript.setTrackedTarget(2);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t0")
+                {
+                    playerScript.setTrackedToolMarker(0);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t1")
+                {
+                    playerScript.setTrackedToolMarker(1);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t2")
+                {
+                    playerScript.setTrackedToolMarker(2);
+                }
+            }
         }
 
 
         private void OnTrackingLost()
-        {            
+        {
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
@@ -143,11 +139,8 @@ namespace Vuforia
                     GameObject player = GameObject.Find("Player");
                     playerScript = player.GetComponent<PlayerScript>();
                 }
-                else
-                {
-                    playerScript.setTrackedTarget((int)Target.UNKNOWN);
-                    playerScript.setTrackedToolMarker(-1);
-                }
+                playerScript.setTrackedTarget((int)Target.UNKNOWN);
+                playerScript.setTrackedToolMarker(-1);
             }
         }
         #endregion // PRIVATE_METHODS
