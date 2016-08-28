@@ -1,4 +1,6 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
+
 using System.Collections;
 using UnityEngine.EventSystems;
 
@@ -6,6 +8,10 @@ using UnityEngine.EventSystems;
 public class HudScript : MonoBehaviour {
 
     PlayerScript playerScript = null;
+
+    public Button attackButton;
+    public Sprite buttonDown;
+    public Sprite buttonUp;
 
     // Use this for initialization
     void Start ()
@@ -15,7 +21,9 @@ public class HudScript : MonoBehaviour {
     }
 
     public void attackButtonClicked()
-    {        
+    {
+        attackButton.image.sprite = buttonDown;
+
         if (playerScript == null)
         {
             GameObject player = GameObject.Find("Player");
@@ -24,5 +32,10 @@ public class HudScript : MonoBehaviour {
 
         playerScript.playerFunctions.attack();
         
+    }
+
+    public void attackButtonReleased()
+    {
+        attackButton.image.sprite = buttonUp;
     }
 }

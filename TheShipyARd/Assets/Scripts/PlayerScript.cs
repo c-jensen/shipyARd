@@ -81,10 +81,10 @@ public class PlayerScript : MonoBehaviour {
     public Target targetPlayer = Target.UNKNOWN;
     public Target playerID = Target.UNKNOWN;
 
-    IEnumerator wait()
-    {
-        yield return new WaitForSeconds(15.0f);
-    }
+    public int allReady = 0;
+    public bool masterReceived = false;
+    public bool incrementDone = false;
+    public bool targetsDistributed = false;
 
     void Awake()
     {
@@ -96,15 +96,15 @@ public class PlayerScript : MonoBehaviour {
         trackedToolMarker = -1;
 
         playerTool = new PlayerToolScript(Tool.NONE);
-
-        GameObject go = GameObject.Find("RenderingSceneScripts");
-        PlayerReadyScript playerReady = go.GetComponent<PlayerReadyScript>();
-        playerReady.ready = true;
     }
 
     // Use this for initialization
     void Start()
     {
+        GameObject ready = GameObject.Find("RenderingSceneScripts");
+        PlayerReadyScript playerReady = ready.GetComponent<PlayerReadyScript>();
+        playerReady.ready = true;
+
         GameObject scoreText = GameObject.Find("ScoreNumberGUI");
         GUIScoreText = scoreText.GetComponent<ScoreScript>();
 
@@ -136,21 +136,35 @@ public class PlayerScript : MonoBehaviour {
 
         player = GameObject.Find("Player");
 
-        if (PhotonNetwork.isMasterClient == false)
-            StartCoroutine(wait());
-
         if (PhotonNetwork.isMasterClient == true)
         {
             markerDistribution.generateToolDistribution();
             playerFunctions.generatePlayerAndTargetList();
+            allReady++;
         }
-
-        playerFunctions.requestTargetAndPlayer();
     }
     
     // Update is called once per frame
     void Update()
     {
+        if(PhotonNetwork.isMasterClient == true)
+        {
+            if (allReady >= NetworkManager.expectedNumberOfPlayers && !targetsDistributed)
+            {
+                targetsDistributed = true;
+                player.GetComponent<PhotonView>().RPC("rpc_masterIsReady", PhotonTargets.All);
+            }
+        }
+        if (PhotonNetwork.isMasterClient == false)
+        {
+            if (!masterReceived)
+                player.GetComponent<PhotonView>().RPC("rpc_playerIsReady", PhotonTargets.MasterClient, PhotonNetwork.player.ID);
+            else if(masterReceived && !incrementDone)
+                {
+                    incrementDone = true;
+                    player.GetComponent<PhotonView>().RPC("rpc_incrementCounter", PhotonTargets.MasterClient);
+                }
+            }
         if (onHitColor.a > 0.0f)
         {
             onHitColor.a -= 0.02f;
@@ -193,6 +207,29 @@ public class PlayerScript : MonoBehaviour {
 
 
     //PUNRPC Section
+    [PunRPC]
+    public void rpc_incrementCounter()
+    {
+        allReady += 1;
+    }
+
+    [PunRPC]
+    public void rpc_playerIsReady(int photonID)
+    {
+        player.GetComponent<PhotonView>().RPC("rpc_masterReceived", PhotonPlayer.Find(photonID));
+    }
+
+    [PunRPC]
+    public void rpc_masterReceived()
+    {
+        masterReceived = true;
+    }
+
+    [PunRPC]
+    public void rpc_masterIsReady()
+    {
+        playerFunctions.requestTargetAndPlayer();
+    }
 
     [PunRPC]
     public void rpc_receiveMarkerPlayerRelation(int markerID, int playersID, int photonID)
@@ -205,7 +242,7 @@ public class PlayerScript : MonoBehaviour {
 
         planePlayer = GameObject.Find("player_" + markerID);
 
-            planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/player_" + playerID.ToString(), typeof(Texture2D)) as Texture2D; ;
+        planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/player_" + playersID.ToString(), typeof(Texture2D)) as Texture2D;
     }
 
     [PunRPC]
@@ -231,7 +268,7 @@ public class PlayerScript : MonoBehaviour {
     {
         targetPlayer = (Target)target;
 
-            targetImage.setImage("Players/player_" + target.ToString());
+        targetImage.setImage("Players/player_" + target.ToString());
     }
 
     [PunRPC]

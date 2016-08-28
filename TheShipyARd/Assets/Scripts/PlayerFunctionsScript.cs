@@ -40,8 +40,9 @@ public class PlayerFunctionsScript : MonoBehaviour {
         GameObject go0 = GameObject.Find("HUDCanvasGUI");
         go0.SetActive(false);
         playerScript.defeatedHUD.SetActive(true);
-        playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID());
-        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/arrested_player_" + playerScript.playerID.ToString(), typeof(Texture2D)) as Texture2D;
+        playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID().ToString());
+        int cast_playerID = (int)playerScript.playerID;
+        playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/arrested_player_" + cast_playerID.ToString(), typeof(Texture2D)) as Texture2D;
     }
 
 
@@ -54,15 +55,36 @@ public class PlayerFunctionsScript : MonoBehaviour {
             playerScript.getAvailablePlayers().Add((Target)i);
         }
 
-        //Shuffle lists
-        for (int i = 0; i < playerScript.getAvailableTargets().Count; i++)
-        {
-            Target temp = playerScript.getAvailableTargets()[i];
-            int randomIndex = Random.Range(i, playerScript.getAvailableTargets().Count - 1);
-            playerScript.getAvailableTargets()[i] = playerScript.getAvailableTargets()[randomIndex];
-            playerScript.getAvailableTargets()[randomIndex] = temp;
-        }
+        bool invalidList = true;
 
+        while (invalidList)
+        {
+            invalidList = false;
+
+            //Shuffle lists
+            for (int i = 0; i < playerScript.getAvailableTargets().Count; i++)
+            {
+                //swap target list
+                Target temp_target = playerScript.getAvailableTargets()[i];
+                int randomIndex_target = Random.Range(0, playerScript.getAvailableTargets().Count);
+                playerScript.getAvailableTargets()[i] = playerScript.getAvailableTargets()[randomIndex_target];
+                playerScript.getAvailableTargets()[randomIndex_target] = temp_target;
+
+                //swap player list
+                Target temp_player = playerScript.getAvailablePlayers()[i];
+                int randomIndex_player = Random.Range(0, playerScript.getAvailablePlayers().Count);
+                playerScript.getAvailablePlayers()[i] = playerScript.getAvailablePlayers()[randomIndex_player];
+                playerScript.getAvailablePlayers()[randomIndex_player] = temp_player;
+            }
+
+            for(int i = 0; i < playerScript.getAvailablePlayers().Count; i++)
+            {
+                if (playerScript.getAvailablePlayers()[i] == playerScript.getAvailableTargets()[i])
+                    invalidList = true;
+            }
+        }
+        
+        /*
         //copy list
         for (int i = 0; i < playerScript.getAvailableTargets().Count; i++)
         {
@@ -70,14 +92,13 @@ public class PlayerFunctionsScript : MonoBehaviour {
         }
 
         playerScript.getAvailablePlayers().Reverse();
+            */
 
     }
 
     public void requestTargetAndPlayer()
     {
         playerScript.player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient, PhotonNetwork.player.ID, playerScript.getMarkerID());
-
-        //player.GetComponent<PhotonView>().RPC("rpc_sendTargetAndPlayerToClient", PhotonTargets.MasterClient);
     }
 
     public void changeToolMarker(int toolID, int marker)
