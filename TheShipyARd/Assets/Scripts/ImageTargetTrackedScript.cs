@@ -99,6 +99,34 @@ namespace Vuforia
                 {
                     playerScript.setTrackedTarget(2);
                 }
+                else if (mTrackableBehaviour.TrackableName == "p3")
+                {
+                    playerScript.setTrackedTarget(3);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p4")
+                {
+                    playerScript.setTrackedTarget(4);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p5")
+                {
+                    playerScript.setTrackedTarget(5);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p6")
+                {
+                    playerScript.setTrackedTarget(6);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p7")
+                {
+                    playerScript.setTrackedTarget(7);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p8")
+                {
+                    playerScript.setTrackedTarget(8);
+                }
+                else if (mTrackableBehaviour.TrackableName == "p9")
+                {
+                    playerScript.setTrackedTarget(9);
+                }
                 else if (mTrackableBehaviour.TrackableName == "t0")
                 {
                     playerScript.setTrackedToolMarker(0);
@@ -110,6 +138,34 @@ namespace Vuforia
                 else if (mTrackableBehaviour.TrackableName == "t2")
                 {
                     playerScript.setTrackedToolMarker(2);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t3")
+                {
+                    playerScript.setTrackedToolMarker(3);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t4")
+                {
+                    playerScript.setTrackedToolMarker(4);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t5")
+                {
+                    playerScript.setTrackedToolMarker(5);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t6")
+                {
+                    playerScript.setTrackedToolMarker(6);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t7")
+                {
+                    playerScript.setTrackedToolMarker(7);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t8")
+                {
+                    playerScript.setTrackedToolMarker(8);
+                }
+                else if (mTrackableBehaviour.TrackableName == "t9")
+                {
+                    playerScript.setTrackedToolMarker(9);
                 }
             }
         }

@@ -12,8 +12,33 @@ public class TargetScript : MonoBehaviour {
     public Sprite targetImage2;
     public Sprite targetImage3;
     public Sprite targetImage4;
-    public Sprite targetSuccessfulImage;
-    public Sprite targetUnsuccessfulImage;
+    public Sprite targetImage5;
+    public Sprite targetImage6;
+    public Sprite targetImage7;
+    public Sprite targetImage8;
+    public Sprite targetImage9;
+
+    public Sprite targetImage0_Successful;
+    public Sprite targetImage1_Successful;
+    public Sprite targetImage2_Successful;
+    public Sprite targetImage3_Successful;
+    public Sprite targetImage4_Successful;
+    public Sprite targetImage5_Successful;
+    public Sprite targetImage6_Successful;
+    public Sprite targetImage7_Successful;
+    public Sprite targetImage8_Successful;
+    public Sprite targetImage9_Successful;
+
+    public Sprite targetImage0_Failed;
+    public Sprite targetImage1_Failed;
+    public Sprite targetImage2_Failed;
+    public Sprite targetImage3_Failed;
+    public Sprite targetImage4_Failed;
+    public Sprite targetImage5_Failed;
+    public Sprite targetImage6_Failed;
+    public Sprite targetImage7_Failed;
+    public Sprite targetImage8_Failed;
+    public Sprite targetImage9_Failed;
 
     // Use this for initialization
     void Awake () {
@@ -30,37 +55,8 @@ public class TargetScript : MonoBehaviour {
         targetComponent.sprite = targetImageUnknown;
     }
 
-    public void setImage0() //method to set our first image
+    public void setImage(string path) //method to set our first image
     {
-        targetComponent.sprite = targetImage0;
-    }
-
-    public void setImage1() //method to set our second image
-    {
-        targetComponent.sprite = targetImage1;
-    }
-
-    public void setImage2() //method to set our third image
-    {
-        targetComponent.sprite = targetImage2;
-    }
-
-    public void setImage3() //method to set our fourth image
-    {
-        targetComponent.sprite = targetImage3;
-    }
-
-    public void setImage4() //method to set our fifth image
-    {
-        targetComponent.sprite = targetImage4;
-    }
-
-    public void setImageSuccessful() //method to set our fifth image
-    {
-        targetComponent.sprite = targetSuccessfulImage;
-    }
-    public void setImageUnsuccessful() //method to set our fifth image
-    {
-        targetComponent.sprite = targetUnsuccessfulImage;
+        targetComponent.sprite = Resources.Load(path, typeof(Sprite)) as Sprite;
     }
 }

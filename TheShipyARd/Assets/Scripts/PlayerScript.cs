@@ -9,7 +9,6 @@ public enum Target
     TARGET_0,
     TARGET_1,
     TARGET_2,
-    /*
     TARGET_3,
     TARGET_4,
     TARGET_5,
@@ -17,7 +16,6 @@ public enum Target
     TARGET_7,
     TARGET_8,
     TARGET_9,
-    */
     MAX_NUM_OF_TARGETS,
     UNKNOWN
 
@@ -207,26 +205,7 @@ public class PlayerScript : MonoBehaviour {
 
         planePlayer = GameObject.Find("player_" + markerID);
 
-        if (playersID == 0)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage0.texture;
-        else if (playersID == 1)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage1.texture;
-        else if (playersID == 2)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage2.texture;
-        else if (playersID == 3)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage3.texture;
-        else if (playersID == 4)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage4.texture;
-        else if (playersID == 5)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage5.texture;
-        else if (playersID == 6)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage6.texture;
-        else if (playersID == 7)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage7.texture;
-        else if (playersID == 8)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage8.texture;
-        else if (playersID == 9)
-            planePlayer.GetComponent<Renderer>().material.mainTexture = playerImage9.texture;
+            planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/player_" + playerID.ToString(), typeof(Texture2D)) as Texture2D; ;
     }
 
     [PunRPC]
@@ -252,16 +231,7 @@ public class PlayerScript : MonoBehaviour {
     {
         targetPlayer = (Target)target;
 
-        if (target == 0)
-            targetImage.setImage0();
-        else if (target == 1)
-            targetImage.setImage1();
-        else if (target == 2)
-            targetImage.setImage2();
-        else if (target == 3)
-            targetImage.setImage3();
-        else if (target == 4)
-            targetImage.setImage4();
+            targetImage.setImage("Players/player_" + target.ToString());
     }
 
     [PunRPC]
@@ -352,7 +322,7 @@ public class PlayerScript : MonoBehaviour {
             //If arrested player was our own target and arrested by us
             if ((int)playerID == attackerID)
             {
-                targetImage.setImageSuccessful();
+                targetImage.setImage("Players/success_arrested_player_" + hisPlayerID.ToString());
                 score++;
                 GUIScoreText.updateScoreValue(score);
                 planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/success_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
@@ -363,7 +333,7 @@ public class PlayerScript : MonoBehaviour {
             //If arrested player was our own target and was not arrested by us
             else
             {
-                targetImage.setImageUnsuccessful();
+                targetImage.setImage("Players/failed_arrested_player_" + hisPlayerID.ToString());
                 planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/failed_arrested_player_" + hisPlayerID.ToString(), typeof(Texture2D)) as Texture2D;
                 infoTextHUD.text = "Someone else arrested your target!";
                 infoTextColor.a = 1.0f;
