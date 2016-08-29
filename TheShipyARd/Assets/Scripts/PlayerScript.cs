@@ -86,6 +86,8 @@ public class PlayerScript : MonoBehaviour {
    
     public int markerPlayerCounter = 0;
 
+    public int scoreRefreshed = 0;
+
     public GameObject player;
     public TargetScript targetImage;
     public ToolScript toolImage;
@@ -93,6 +95,7 @@ public class PlayerScript : MonoBehaviour {
     public float health = 100f;
     public int score = 0;
     private bool gameStopped = false;
+    private bool terminateGame = false;
 
     public bool playerDead = false;
     public Target targetPlayer = Target.UNKNOWN;
@@ -188,6 +191,11 @@ public class PlayerScript : MonoBehaviour {
                 targetsDistributed = true;
                 player.GetComponent<PhotonView>().RPC("rpc_masterIsReady", PhotonTargets.All);
             }
+            if(scoreRefreshed >= NetworkManager.expectedNumberOfPlayers && !terminateGame && gameFinishedBackgroundColor.a >= 1.0f)
+            {
+                terminateGame = true;
+                player.GetComponent<PhotonView>().RPC("rpc_generateScoreboard", PhotonTargets.All);
+            }
         }
         if (PhotonNetwork.isMasterClient == false)
         {
@@ -223,11 +231,6 @@ public class PlayerScript : MonoBehaviour {
                 {
                     gameFinishedBackgroundColor.a += 0.003f;
                     gameFinishedBackground.color = gameFinishedBackgroundColor;
-                }
-                if (gameFinishedBackgroundColor.a >= 1.0f)
-                {
-                    gameFinishedHUD.SetActive(false);
-                    highscoreHUD.SetActive(true);
                 }
             }
         }
@@ -291,44 +294,29 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    public void generateScoreboard()
+    [PunRPC]
+    public void rpc_generateScoreboard()
     {
-        /*
-        float win = Screen.width * 0.6f;
-        float w1 = win * 0.35f; float w2 = win * 0.15f;
-
-        GUILayout.BeginVertical();
-
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Player Nr:", GUILayout.Width(w1));
-        GUILayout.Label("Score:", GUILayout.Width(w2));
-        GUILayout.EndHorizontal();
-        */
-
-        for(int i = 0; i < NetworkManager.expectedNumberOfPlayers;i++)
+        if (highscoreScript.firstRound)
         {
-            int highestScoreIndex = 0;
-            for (int j = 1; j < playerScores.Count; j++)
+            highscoreScript.firstRound = false;
+
+            for (int i = 0; i < playerScores.Count; i++)
             {
-                if (playerScores[i] > playerScores[highestScoreIndex])
-                    highestScoreIndex = i;
-            }
-
-            if (highscoreScript.firstRound)
                 highscoreScript.highscores.Add(playerScores[i]);
-            else
-                highscoreScript.highscores[i] += playerScores[i];
-
-            /*
-            GUILayout.BeginHorizontal();
-            GUILayout.Label(highestScoreIndex.ToString(), GUILayout.Width(w1));
-            GUILayout.Label(playerScores[highestScoreIndex].ToString(), GUILayout.Width(w2));
-            GUILayout.EndHorizontal();
-            */
+                highscoreScript.playerIDs.Add(i);
+            }
         }
-
-        highscoreScript.firstRound = false;
-        //GUILayout.EndVertical();
+        else
+        {
+            for (int i = 0; i < playerScores.Count; i++)
+            {
+                highscoreScript.highscores[i] += (playerScores[i]);
+            }
+        }
+        gameFinishedHUD.SetActive(false);
+        highscoreHUD.SetActive(true);
+        highscoreScript.sort();
     }
 
     //This function is requiered though empty
@@ -341,7 +329,7 @@ public class PlayerScript : MonoBehaviour {
     {
         playerScores[playerID] = score;
     }
-    
+
     [PunRPC]
     public void rpc_gameIsOver()
     {
@@ -357,13 +345,20 @@ public class PlayerScript : MonoBehaviour {
 
         gameFinishedHUD.SetActive(true);
 
-        generateScoreboard();
+        player.GetComponent<PhotonView>().RPC("rpc_updatePlayerScore", PhotonTargets.All, (int)playerID, score);
+        player.GetComponent<PhotonView>().RPC("rpc_incrementScoreRefreshed", PhotonTargets.MasterClient);
     }
 
     [PunRPC]
     public void rpc_incrementCounter()
     {
         allReady += 1;
+    }
+
+    [PunRPC]
+    public void rpc_incrementScoreRefreshed()
+    {
+        scoreRefreshed++;
     }
 
     [PunRPC]
@@ -557,12 +552,7 @@ public class PlayerScript : MonoBehaviour {
                 infoTextHUD.text = "You arrested the wrong target!";
                 infoTextColor.a = 1.0f;
                 infoTextHUD.color = infoTextColor;
-            }
-            GUIScoreText.updateScoreValue(score);
-            if (oldScore != score)
-            {
-                player.GetComponent<PhotonView>().RPC("rpc_updatePlayerScore", PhotonTargets.All, (int)playerID, score);
-            }
+            }        
         }
         //If we were not the attacker
         else
@@ -571,6 +561,11 @@ public class PlayerScript : MonoBehaviour {
             infoTextHUD.text = "Someone in the game was arrested!";
             infoTextColor.a = 1.0f;
             infoTextHUD.color = infoTextColor;
+        }
+
+        if (oldScore != score)
+        {
+            GUIScoreText.updateScoreValue(score);           
         }
 
         if (PhotonNetwork.isMasterClient == true)
