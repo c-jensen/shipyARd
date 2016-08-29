@@ -34,7 +34,7 @@ public class PlayerToolScript : MonoBehaviour {
         }
         else if (playerToolType == Tool.INJECTION)
         {
-            toolDamage = ROPE_DAMAGE;
+            toolDamage = INJECTION_DAMAGE;
             toolType = Tool.INJECTION;
         }
         else if (playerToolType == Tool.ROPE)

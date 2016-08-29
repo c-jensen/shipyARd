@@ -34,6 +34,8 @@ Heute geschafft:
 		MarkerID Slider max auf 9 setzen
 		Bei Angriff ohne Tool -> Log
 		Wenn 2 spieler gleichzeitig das gleiche tool aufheben -> sicherheitsabfrage über master rpccall
+		Direkt bei Start Blick auf Marker setzt das Target nicht (Lösung: Updatemethode die Target setzt solange getracked ist)
+		Sicherheitsabfrage wenn man sich gegenseitig tötet
 
 		TODO wenn mehr als 3 Player genutzt werden sollen:
 			Im Player Script enum erweitern

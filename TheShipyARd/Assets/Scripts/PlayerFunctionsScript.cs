@@ -43,6 +43,8 @@ public class PlayerFunctionsScript : MonoBehaviour {
         playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID().ToString());
         int cast_playerID = (int)playerScript.playerID;
         playerScript.planePlayer.GetComponent<Renderer>().material.mainTexture = Resources.Load("Players/arrested_player_" + cast_playerID.ToString(), typeof(Texture2D)) as Texture2D;
+        if (PhotonNetwork.isMasterClient == true)
+            playerScript.checkIfGameFinished(playerScript.playerID);
     }
 
 

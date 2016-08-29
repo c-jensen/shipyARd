@@ -27,6 +27,10 @@ public class PlayerScript : MonoBehaviour {
     public static List<Target> availableTargets = new List<Target>();
     //List containing all unused player IDs
     public static List<Target> availablePlayers = new List<Target>();
+    //List containing all players not arrested
+    public static List<Target> activePlayers = new List<Target>();
+    //List containing all players targets not arrested
+    public static List<Target> activePlayersTargets = new List<Target>();
 
     public MarkerDistributionScript markerDistribution;
     public PlayerFunctionsScript playerFunctions;
@@ -53,11 +57,20 @@ public class PlayerScript : MonoBehaviour {
     public ScoreScript GUIScoreText;
 
     public GameObject defeatedHUD;
+    public GameObject gameFinishedHUD;
+    public GameObject highscoreHUD;
+
+    Text gameFinishedText;
+    Image gameFinishedBackground;
+
     public Image onHitHUD;
     public Text infoTextHUD;
 
     public Color onHitColor;
     public Color infoTextColor;
+
+    public Color gameFinishedBackgroundColor;
+    public Color gameFinishedTextColor;
 
     public static int markerID;
 
@@ -76,6 +89,7 @@ public class PlayerScript : MonoBehaviour {
 
     public float health = 100f;
     public int score = 0;
+    private bool gameStopped = false;
 
     public bool playerDead = false;
     public Target targetPlayer = Target.UNKNOWN;
@@ -113,6 +127,16 @@ public class PlayerScript : MonoBehaviour {
 
         defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
         defeatedHUD.SetActive(false);
+
+        gameFinishedHUD = GameObject.Find("HUDGameIsFinished");
+        gameFinishedBackground = GameObject.Find("GameFinishedBackground").GetComponent<Image>();
+        gameFinishedBackgroundColor = gameFinishedBackground.color;
+        gameFinishedText = GameObject.Find("GameFinishedText").GetComponent<Text>();
+        gameFinishedTextColor = gameFinishedText.color;
+        gameFinishedHUD.SetActive(false);
+
+        highscoreHUD = GameObject.Find("HUDHighscore");      
+        highscoreHUD.SetActive(false);
 
         onHitHUD = GameObject.Find("OnHitEffectGUI").GetComponent<Image>();
         onHitColor = onHitHUD.color;
@@ -175,6 +199,24 @@ public class PlayerScript : MonoBehaviour {
             infoTextColor.a -= 0.0075f;
             infoTextHUD.color = infoTextColor;
         }
+        if (gameFinishedHUD.GetActive())
+        {
+            if (gameFinishedTextColor.a < 1.0f)
+            {
+                gameFinishedTextColor.a += 0.003f;
+                gameFinishedText.color = gameFinishedTextColor;
+            }
+            if (gameFinishedBackgroundColor.a < 1.0f)
+            {
+                gameFinishedBackgroundColor.a += 0.003f;
+                gameFinishedBackground.color = gameFinishedBackgroundColor;
+            }
+            if(gameFinishedBackgroundColor.a >= 1.0f)
+            {
+                gameFinishedHUD.SetActive(false);
+                highscoreHUD.SetActive(true);
+            }
+        }
     }  
 
     public void setTrackedTarget(int trackedEnemy)
@@ -202,9 +244,58 @@ public class PlayerScript : MonoBehaviour {
         return markerID;
     }
 
+    public void checkIfGameFinished(Target hisPlayerID)
+    {
+        for (int i = 0; i < activePlayers.Count; i++)
+        {
+            if (activePlayers[i] == hisPlayerID)
+            {
+                activePlayers.RemoveAt(i);
+                activePlayersTargets.RemoveAt(i);
+                break;
+            }
+        }
+        for (int i = 0; i < activePlayersTargets.Count; i++)
+        {
+            if (activePlayersTargets[i] == hisPlayerID)
+            {
+                activePlayersTargets[i] = Target.UNKNOWN;
+            }
+        }
+
+        bool gameFinished = true;
+
+        for (int i = 0; i < activePlayersTargets.Count; i++)
+        {
+            gameFinished &= (activePlayersTargets[i] == Target.UNKNOWN);
+        }
+
+        if (gameFinished && !gameStopped)
+        {
+            gameStopped = true;
+            player.GetComponent<PhotonView>().RPC("rpc_gameIsOver", PhotonTargets.All);
+        }
+    }
+
     //This function is requiered though empty
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){}
 
+
+    [PunRPC]
+    public void rpc_gameIsOver()
+    {
+        if (!playerDead)
+        {
+            GameObject HUDCanvas = GameObject.Find("HUDCanvasGUI");
+            HUDCanvas.SetActive(false);
+        }
+        else
+        {
+            defeatedHUD.SetActive(false);
+        }
+
+        gameFinishedHUD.SetActive(true);
+    }
 
     //PUNRPC Section
     [PunRPC]
@@ -310,6 +401,9 @@ public class PlayerScript : MonoBehaviour {
             markerDistribution.setMarkerToPlayer(marker, clientPlayer);
             markerDistribution.setMarkerToPhotonID(marker, id);
 
+            activePlayers.Add((Target)clientPlayer);
+            activePlayersTargets.Add((Target)clientTarget);
+
             player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
             player.GetComponent<PhotonView>().RPC("rpc_receivePlayer", PhotonPlayer.Find(id), clientPlayer);
 
@@ -408,6 +502,11 @@ public class PlayerScript : MonoBehaviour {
             infoTextHUD.text = "Someone in the game was arrested!";
             infoTextColor.a = 1.0f;
             infoTextHUD.color = infoTextColor;
+        }
+
+        if (PhotonNetwork.isMasterClient == true)
+        {
+            checkIfGameFinished((Target)hisPlayerID);
         }
     }
 }
