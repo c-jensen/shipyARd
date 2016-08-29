@@ -34,6 +34,9 @@ public class PlayerScript : MonoBehaviour {
 
     public MarkerDistributionScript markerDistribution;
     public PlayerFunctionsScript playerFunctions;
+    public HighscoreScript highscoreScript;
+
+    private List<int> playerScores;
 
     public Sprite playerImage0;
     public Sprite playerImage1;
@@ -115,6 +118,13 @@ public class PlayerScript : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        playerScores = new List<int>();
+
+        for (int i = 0; i < NetworkManager.expectedNumberOfPlayers; i++)
+        {
+            playerScores.Add(0);
+        }
+
         GameObject ready = GameObject.Find("RenderingSceneScripts");
         PlayerReadyScript playerReady = ready.GetComponent<PlayerReadyScript>();
         playerReady.ready = true;
@@ -127,14 +137,14 @@ public class PlayerScript : MonoBehaviour {
 
         defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
         defeatedHUD.SetActive(false);
-
+        
         gameFinishedHUD = GameObject.Find("HUDGameIsFinished");
         gameFinishedBackground = GameObject.Find("GameFinishedBackground").GetComponent<Image>();
         gameFinishedBackgroundColor = gameFinishedBackground.color;
         gameFinishedText = GameObject.Find("GameFinishedText").GetComponent<Text>();
         gameFinishedTextColor = gameFinishedText.color;
         gameFinishedHUD.SetActive(false);
-
+        
         highscoreHUD = GameObject.Find("HUDHighscore");      
         highscoreHUD.SetActive(false);
 
@@ -199,22 +209,26 @@ public class PlayerScript : MonoBehaviour {
             infoTextColor.a -= 0.0075f;
             infoTextHUD.color = infoTextColor;
         }
-        if (gameFinishedHUD.GetActive())
+
+        if (gameFinishedHUD != null)
         {
-            if (gameFinishedTextColor.a < 1.0f)
+            if (gameFinishedHUD.GetActive())
             {
-                gameFinishedTextColor.a += 0.003f;
-                gameFinishedText.color = gameFinishedTextColor;
-            }
-            if (gameFinishedBackgroundColor.a < 1.0f)
-            {
-                gameFinishedBackgroundColor.a += 0.003f;
-                gameFinishedBackground.color = gameFinishedBackgroundColor;
-            }
-            if(gameFinishedBackgroundColor.a >= 1.0f)
-            {
-                gameFinishedHUD.SetActive(false);
-                highscoreHUD.SetActive(true);
+                if (gameFinishedTextColor.a < 1.0f)
+                {
+                    gameFinishedTextColor.a += 0.003f;
+                    gameFinishedText.color = gameFinishedTextColor;
+                }
+                if (gameFinishedBackgroundColor.a < 1.0f)
+                {
+                    gameFinishedBackgroundColor.a += 0.003f;
+                    gameFinishedBackground.color = gameFinishedBackgroundColor;
+                }
+                if (gameFinishedBackgroundColor.a >= 1.0f)
+                {
+                    gameFinishedHUD.SetActive(false);
+                    highscoreHUD.SetActive(true);
+                }
             }
         }
     }  
@@ -277,10 +291,57 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
+    public void generateScoreboard()
+    {
+        /*
+        float win = Screen.width * 0.6f;
+        float w1 = win * 0.35f; float w2 = win * 0.15f;
+
+        GUILayout.BeginVertical();
+
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("Player Nr:", GUILayout.Width(w1));
+        GUILayout.Label("Score:", GUILayout.Width(w2));
+        GUILayout.EndHorizontal();
+        */
+
+        for(int i = 0; i < NetworkManager.expectedNumberOfPlayers;i++)
+        {
+            int highestScoreIndex = 0;
+            for (int j = 1; j < playerScores.Count; j++)
+            {
+                if (playerScores[i] > playerScores[highestScoreIndex])
+                    highestScoreIndex = i;
+            }
+
+            if (highscoreScript.firstRound)
+                highscoreScript.highscores.Add(playerScores[i]);
+            else
+                highscoreScript.highscores[i] += playerScores[i];
+
+            /*
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(highestScoreIndex.ToString(), GUILayout.Width(w1));
+            GUILayout.Label(playerScores[highestScoreIndex].ToString(), GUILayout.Width(w2));
+            GUILayout.EndHorizontal();
+            */
+        }
+
+        highscoreScript.firstRound = false;
+        //GUILayout.EndVertical();
+    }
+
     //This function is requiered though empty
     public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info){}
 
+    //PUNRPC Section================================================================
 
+    [PunRPC]
+    public void rpc_updatePlayerScore(int playerID, int score)
+    {
+        playerScores[playerID] = score;
+    }
+    
     [PunRPC]
     public void rpc_gameIsOver()
     {
@@ -295,9 +356,10 @@ public class PlayerScript : MonoBehaviour {
         }
 
         gameFinishedHUD.SetActive(true);
+
+        generateScoreboard();
     }
 
-    //PUNRPC Section
     [PunRPC]
     public void rpc_incrementCounter()
     {
@@ -378,10 +440,11 @@ public class PlayerScript : MonoBehaviour {
     public void rpc_sendTargetAndPlayerToClient(int id, int marker)
     {
         if (PhotonNetwork.isMasterClient && availableTargets.Count >= 1 && availablePlayers.Count >= 1)
-        {
+        {           
+
             //send the target and player to the client
             int clientTarget = (int)availableTargets[0];
-            int clientPlayer = (int)availablePlayers[0];
+            int clientPlayer = (int)availablePlayers[0];            
 
             if (clientTarget == clientPlayer)
             {
@@ -447,6 +510,8 @@ public class PlayerScript : MonoBehaviour {
         planePlayer = GameObject.Find("player_" + markerID);
         int hisPlayerID = markerDistribution.getMarkerToPlayer(markerID);
 
+        int oldScore = score;
+
         //If arrested player was our target
         if (markerDistribution.getMarkerToPlayer(markerID) == (int)targetPlayer)
         {
@@ -494,6 +559,10 @@ public class PlayerScript : MonoBehaviour {
                 infoTextHUD.color = infoTextColor;
             }
             GUIScoreText.updateScoreValue(score);
+            if (oldScore != score)
+            {
+                player.GetComponent<PhotonView>().RPC("rpc_updatePlayerScore", PhotonTargets.All, (int)playerID, score);
+            }
         }
         //If we were not the attacker
         else
