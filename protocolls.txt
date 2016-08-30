@@ -5,6 +5,7 @@ TODO: Optional:
 		Nur Master hat Zugriff auf Slider mit Spieler Zahl
 	Wenn 2 spieler gleichzeitig das gleiche tool aufheben -> sicherheitsabfrage über master rpccall
 	Direkt bei Start Blick auf Marker setzt das Target nicht (Lösung: Updatemethode die Target setzt solange getracked ist)
+	The Game is Finished Screen -> unten und oben ebenfalls ganz schwarzen Rahmen (und nicht einfaden lassen), damit man das Logo links unten nicht sieht
 
 		Future Work:
 			Guards im Raum (GPS oder extra player in der Runde...)
@@ -12,6 +13,23 @@ TODO: Optional:
 				Nur Host kann player Zahl bestimmen
 			Mehr Waffen, andere Bonus Items, Power Ups
 			2D Personenbilder und Waffen durch animierte 3D Modelle ersetzen
+
+* * * 30.08.2016 * * *
+
+Next Steps:
+
+	Target Enum umbennen Player Enum und dann hat jeder eine Variable vom Typ PlayerID für sich und eine Variable vom Typ PlayerID für sein Target
+	Zusätzlich überall darauf achten, dass die Enum verwendet wird und nicht einfach ints...
+	Neue Marker ausdrucken
+	Master bekommt ReplayButton
+	public private changes
+	Variablen umbennen und Tötungsmetaphern ändern
+	PlayerID in HUD anzeigen
+	Info Schrift Zeit länger machen
+	Bei Angriff ohne Tool -> Log
+
+Heute geschafft:
+	Kommentare eingefügt
 
 * * * 29.08.2016 * * *
 

@@ -2,10 +2,14 @@
 using UnityEngine.UI;
 using System.Collections;
 
-public class TargetScript : MonoBehaviour {
+//Target script is responsible for displaying the right target icon on the top right hand corner in the HUD
+
+public class TargetScript : MonoBehaviour
+{
 
     public Image targetComponent;
 
+    //different image types are set within Unity to the variables
     public Sprite targetImageUnknown;
     public Sprite targetImage0;
     public Sprite targetImage1;
@@ -40,22 +44,20 @@ public class TargetScript : MonoBehaviour {
     public Sprite targetImage8_Failed;
     public Sprite targetImage9_Failed;
 
-    // Use this for initialization
-    void Awake () {
+    void Awake()
+    {
+        //executed when starting up
         setImageUnknown();
     }
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
 
-    public void setImageUnknown() //method to set our first image
+    //executed when starting and no target is known yet
+    public void setImageUnknown()
     {
         targetComponent.sprite = targetImageUnknown;
     }
 
-    public void setImage(string path) //method to set our first image
+    //function to set the right image 
+    public void setImage(string path)
     {
         targetComponent.sprite = Resources.Load(path, typeof(Sprite)) as Sprite;
     }

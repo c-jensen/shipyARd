@@ -3,14 +3,13 @@ using System.Collections;
 
 namespace Vuforia
 {
-    /// <summary>
     /// A custom handler that implements the ITrackableEventHandler interface.
-    /// </summary>
     public class ImageTargetTrackedScript : MonoBehaviour,
                                                 ITrackableEventHandler
     {
         #region PRIVATE_MEMBER_VARIABLES
 
+        //Trackable Behaviour is to register the event handler
         private TrackableBehaviour mTrackableBehaviour;
         private PlayerScript playerScript = null;
 
@@ -44,13 +43,14 @@ namespace Vuforia
                                         TrackableBehaviour.Status newStatus)
         {
             if (newStatus == TrackableBehaviour.Status.DETECTED ||
-                newStatus == TrackableBehaviour.Status.TRACKED) //||
-                                                                //newStatus == TrackableBehaviour.Status.EXTENDED_TRACKED)
+                newStatus == TrackableBehaviour.Status.TRACKED)
             {
+                //Marker detected
                 OnTrackingFound();
             }
             else
             {
+                //Marker lost
                 OnTrackingLost();
             }
         }
@@ -68,7 +68,7 @@ namespace Vuforia
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
 
-            // Enable rendering:
+            // Enable rendering of the AR content:
             foreach (Renderer component in rendererComponents)
             {
                 component.enabled = true;
@@ -80,6 +80,8 @@ namespace Vuforia
                 component.enabled = true;
             }
 
+            //Set the tracked target to the player
+            //this can either be another player or a tool
             if (playerReadyScript.ready)
             {
                 if (playerScript == null)
@@ -87,6 +89,10 @@ namespace Vuforia
                     GameObject player = GameObject.Find("Player");
                     playerScript = player.GetComponent<PlayerScript>();
                 }
+
+
+                //PLAYER MARKERS =========================================
+
                 if (mTrackableBehaviour.TrackableName == "p0")
                 {
                     playerScript.setTrackedTarget(0);
@@ -127,10 +133,14 @@ namespace Vuforia
                 {
                     playerScript.setTrackedTarget(9);
                 }
+
+                //TOOL MARKERS =========================================
+
                 else if (mTrackableBehaviour.TrackableName == "t0")
                 {
                     playerScript.setTrackedToolMarker(0);
                 }
+
                 else if (mTrackableBehaviour.TrackableName == "t1")
                 {
                     playerScript.setTrackedToolMarker(1);
@@ -176,7 +186,7 @@ namespace Vuforia
             Renderer[] rendererComponents = GetComponentsInChildren<Renderer>(true);
             Collider[] colliderComponents = GetComponentsInChildren<Collider>(true);
 
-            // Disable rendering:
+            // Disable rendering of AR content if marker was lost:
             foreach (Renderer component in rendererComponents)
             {
                 component.enabled = false;
@@ -188,6 +198,7 @@ namespace Vuforia
                 component.enabled = false;
             }
 
+            //also inform the player that he is not tracking the current marker anymore
             if (playerReadyScript.ready)
             {
                 if (playerScript == null)
@@ -195,6 +206,8 @@ namespace Vuforia
                     GameObject player = GameObject.Find("Player");
                     playerScript = player.GetComponent<PlayerScript>();
                 }
+
+                //tracked target is unknown again
                 playerScript.setTrackedTarget((int)Target.UNKNOWN);
                 playerScript.setTrackedToolMarker(-1);
             }

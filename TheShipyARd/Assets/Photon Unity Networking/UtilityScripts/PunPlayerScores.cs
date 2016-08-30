@@ -9,6 +9,8 @@ public class PunPlayerScores : MonoBehaviour
     public const string PlayerScoreProp = "score";
 }
 
+//this script contains score setters / getters and methods to add players to the score table
+
 
 public static class ScoreExtensions
 {

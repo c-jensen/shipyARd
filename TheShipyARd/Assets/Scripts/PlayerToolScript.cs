@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+//enum for the different tool types
 public enum Tool
 {
     HANDCUFFS,
@@ -10,8 +11,11 @@ public enum Tool
     NONE
 }
 
-public class PlayerToolScript : MonoBehaviour {
+public class PlayerToolScript : MonoBehaviour
+{
 
+    //the effectiveness of the different tools
+    //declares how fast the target will be jailed
     private const float HANDCUFFS_DAMAGE = 20.0f;
     private const float INJECTION_DAMAGE = 100.0f;
     private const float ROPE_DAMAGE = 10.0f;
@@ -22,12 +26,15 @@ public class PlayerToolScript : MonoBehaviour {
 
     public PlayerToolScript(Tool playerToolType)
     {
-        if(playerToolType == Tool.NONE)
+
+        //depending on type of tool, another effectiveness 
+        if (playerToolType == Tool.NONE)
         {
             toolDamage = 0.0f;
             toolType = Tool.NONE;
         }
-        else if(playerToolType == Tool.HANDCUFFS)
+
+        else if (playerToolType == Tool.HANDCUFFS)
         {
             toolDamage = HANDCUFFS_DAMAGE;
             toolType = Tool.HANDCUFFS;
@@ -44,11 +51,13 @@ public class PlayerToolScript : MonoBehaviour {
         }
     }
 
+    //getter for tool effectiveness
     public float getToolDamage()
     {
         return toolDamage;
     }
 
+    //getter for tool type
     public Tool getToolType()
     {
         return toolType;

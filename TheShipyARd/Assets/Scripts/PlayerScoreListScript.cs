@@ -17,11 +17,15 @@ public class PlayerScoreListScript : MonoBehaviour {
 	
 	}
 
+    //creates the leaderboard
     public void initScoreList()
     {
         highscoreScript = GameObject.Find("GameSceneScripts").GetComponent<HighscoreScript>();
-        for(int i = 0; i < highscoreScript.sortedHighscores.Count; i++)
+
+        //loop over sorted highscore list
+        for (int i = 0; i < highscoreScript.sortedHighscores.Count; i++)
         {
+            //create one line in the table for each player
             GameObject go = Instantiate(playerScoreEntryPrefab);
             go.transform.SetParent(this.transform);
             go.transform.Find("PlayerIDText").GetComponent<Text>().text = "Player " + highscoreScript.sortedPlayerIDs[i].ToString();

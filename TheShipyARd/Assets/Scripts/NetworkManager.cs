@@ -4,10 +4,16 @@ using System.Collections.Generic;
 
 using Photon;
 
+//this class is responsible for all the network management done when starting the game
+
 public class NetworkManager : Photon.PunBehaviour
 {
+    //expected number of players is the number which is set during the start menu via the slider
     public static int expectedNumberOfPlayers = 2;
+
+    //current number of players is the count of players that have joined the room
     public static int currentNumberOfPlayers = 0;
+
     public static bool isConnected = false;
 
     IEnumerator waitRoutine()
@@ -27,9 +33,11 @@ public class NetworkManager : Photon.PunBehaviour
     }
     void Update()
     {
-        if(isConnected == true)
+        //update: get current Number of players from photon network
+        if (isConnected == true)
             currentNumberOfPlayers = PhotonNetwork.room.playerCount;
 
+        //of currentNumberOfPlayers is reached, close the room for other players and load the next level
         if (currentNumberOfPlayers == expectedNumberOfPlayers)
         {
             Application.LoadLevel(2);
@@ -37,27 +45,25 @@ public class NetworkManager : Photon.PunBehaviour
         }
     }
 
-    void OnGUI()
-    {
-        //GUILayout.Label(PhotonNetwork.connectionStateDetailed.ToString());
-    }
-
     public override void OnJoinedLobby()
     {
+        //attempt to join a random room
         PhotonNetwork.JoinRandomRoom();
     }
 
     public override void OnJoinedRoom()
     {
+        //joining of room was successful
         isConnected = true;
 
-        //the first client becomes the master
+        //the first client becomes the master client
         if (PhotonNetwork.masterClient == null)
             PhotonNetwork.SetMasterClient(PhotonNetwork.player);
     }
 
     void OnPhotonRandomJoinFailed()
     {
-        PhotonNetwork.CreateRoom(null); //null could be any room name id
-    }   
+        //if random join failed, create a new room
+        PhotonNetwork.CreateRoom(null);
+    }
 }

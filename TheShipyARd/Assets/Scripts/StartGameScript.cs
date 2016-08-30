@@ -1,10 +1,12 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-public class StartGameScript : MonoBehaviour {
+public class StartGameScript : MonoBehaviour
+{
 
-	// Update is called once per frame
-	public void ChangeToScene(int sceneToLoad) {
-            Application.LoadLevel(sceneToLoad);
+    //This function is a conveniance function to load a different scene
+    public void ChangeToScene(int sceneToLoad)
+    {
+        Application.LoadLevel(sceneToLoad);
     }
 }

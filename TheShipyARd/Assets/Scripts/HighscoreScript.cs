@@ -5,24 +5,31 @@ using System.Collections.Generic;
 
 public class HighscoreScript : MonoBehaviour {
 
+    //check if list is initialized
     public bool firstRound;
-    public List<int> highscores;
-    public List<int> sortedHighscores;
+    
+    //lists sorted by player id
     public List<int> playerIDs;
+    public List<int> highscores;
+
+    //list sorted by highest score
     public List<int> sortedPlayerIDs;
+    public List<int> sortedHighscores;
 
     // Use this for initialization
     void Start () {
-        highscores = new List<int>();
-        sortedHighscores = new List<int>();
-        playerIDs = new List<int>();
-        sortedPlayerIDs = new List<int>();
+        highscores          = new List<int>();
+        sortedHighscores    = new List<int>();
+        playerIDs           = new List<int>();
+        sortedPlayerIDs     = new List<int>();
+
         firstRound = true;
     }
 
-
+    //This method sorts the lists by highest score values
     public void sort()
     {
+        //init sorted lists with current player and scores first sorted by player ID
         sortedHighscores.Clear();
         sortedPlayerIDs.Clear();
 
@@ -40,6 +47,7 @@ public class HighscoreScript : MonoBehaviour {
         {
             highestIndex = i;
 
+            //get current highstest score in the list
             for (int j = i + 1; j < sortedHighscores.Count; j++)
             {
                 if (sortedHighscores[highestIndex] < sortedHighscores[j])
@@ -48,6 +56,7 @@ public class HighscoreScript : MonoBehaviour {
                 }
             }
 
+            //switch first with highest index
             tmpScore = sortedHighscores[i];
             tmpPlayerID = sortedPlayerIDs[i];
             sortedHighscores[i] = sortedHighscores[highestIndex];

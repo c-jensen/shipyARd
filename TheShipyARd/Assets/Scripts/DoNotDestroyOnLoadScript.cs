@@ -1,15 +1,17 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class DoNotDestroyOnLoadScript : MonoBehaviour {
+public class DoNotDestroyOnLoadScript : MonoBehaviour
+{
 
-	// Use this for initialization
-	void Start () {
+    // This Script prevents the Game Object from beeing destroyed, if the scene is changed
+    void Start()
+    {
         DontDestroyOnLoad(gameObject);
-	}
-	
-	// Update is called once per frame
-	void Update () {
-	
-	}
+    }
+
+    void Update()
+    {
+
+    }
 }
