@@ -26,10 +26,10 @@ public class PlayerScoreListScript : MonoBehaviour {
         for (int i = 0; i < highscoreScript.sortedHighscores.Count; i++)
         {
             //create one line in the table for each player
-            GameObject go = Instantiate(playerScoreEntryPrefab);
-            go.transform.SetParent(this.transform);
-            go.transform.Find("PlayerIDText").GetComponent<Text>().text = "Player " + highscoreScript.sortedPlayerIDs[i].ToString();
-            go.transform.Find("PlayerScoreText").GetComponent<Text>().text = highscoreScript.sortedHighscores[i].ToString();
+            GameObject playerScoreEntry_go = Instantiate(playerScoreEntryPrefab);
+            playerScoreEntry_go.transform.SetParent(this.transform);
+            playerScoreEntry_go.transform.Find("PlayerIDText").GetComponent<Text>().text = "Player " + highscoreScript.sortedPlayerIDs[i].ToString();
+            playerScoreEntry_go.transform.Find("PlayerScoreText").GetComponent<Text>().text = highscoreScript.sortedHighscores[i].ToString();
         }
     }
 }

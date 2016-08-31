@@ -14,20 +14,20 @@ public class PlayerFunctionsScript : MonoBehaviour
     }
 
     //this method is called, whenever the interaction button is pressed
-    public void attack()
+    public void interact()
     {
         //only do something, if the player is not arrested
-        if (!playerScript.playerDead)
+        if (!playerScript.playerArrested)
         {
             int cast_trackedTarget = (int)playerScript.trackedTarget;
 
             //If tracked target is a valid player marker, which also belongs to a active player AND the current user has a tool equipped
-            if (cast_trackedTarget != playerScript.getMarkerID() && (cast_trackedTarget != (int)Target.UNKNOWN) && (playerScript.playerTool.getToolType() != Tool.NONE))
+            if (cast_trackedTarget != playerScript.getMarkerID() && (cast_trackedTarget != (int)Player_ID.UNKNOWN) && (playerScript.playerTool.getToolType() != Tool.NONE))
             {
                 int photonID = playerScript.markerDistribution.getMarkerToPhotonID(cast_trackedTarget);
 
                 //Send an rpc call to that player, that he is about to get arrested
-                playerScript.player.GetComponent<PhotonView>().RPC("rpc_takeDamage", PhotonPlayer.Find(photonID), (int)playerScript.playerID, playerScript.playerTool.getToolDamage());
+                playerScript.player.GetComponent<PhotonView>().RPC("rpc_continueArresting", PhotonPlayer.Find(photonID), (int)playerScript.playerID, playerScript.playerTool.getToolEffectiveness());
             }
 
             //otherwise check if the current tracked marker is a tool marker and also check if it contains a tool and is not already empty
@@ -45,17 +45,17 @@ public class PlayerFunctionsScript : MonoBehaviour
         }
     }
 
-    public void playerDying(int attackerID)
+    public void playerBeingArrested(int attackerID)
     {
         //player was arrested
-        playerScript.playerDead = true;
+        playerScript.playerArrested = true;
 
         //inform all other players, that the current player was arrested
-        playerScript.player.GetComponent<PhotonView>().RPC("rpc_playerDied", PhotonTargets.Others, playerScript.getMarkerID(), attackerID, (int)playerScript.targetPlayer);
+        playerScript.player.GetComponent<PhotonView>().RPC("rpc_playerWasArrested", PhotonTargets.Others, playerScript.getMarkerID(), attackerID, (int)playerScript.targetPlayer);
 
         //change the HUD of the player to the jail hud
-        GameObject go0 = GameObject.Find("HUDCanvasGUI");
-        go0.SetActive(false);
+        GameObject hudCanvasGUI_gameObject = GameObject.Find("HUDCanvasGUI");
+        hudCanvasGUI_gameObject.SetActive(false);
         playerScript.defeatedHUD.SetActive(true);
         playerScript.planePlayer = GameObject.Find("player_" + playerScript.getMarkerID().ToString());
         int cast_playerID = (int)playerScript.playerID;
@@ -72,8 +72,8 @@ public class PlayerFunctionsScript : MonoBehaviour
         //Add all available players to a list for available players and also available targets
         for (int i = 0; i < NetworkManager.expectedNumberOfPlayers; i++)
         {
-            playerScript.getAvailableTargets().Add((Target)i);
-            playerScript.getAvailablePlayers().Add((Target)i);
+            playerScript.getAvailableTargets().Add((Player_ID)i);
+            playerScript.getAvailablePlayers().Add((Player_ID)i);
         }
 
         //the following code is some logic, to prevent the players from having themselves as a target
@@ -87,13 +87,13 @@ public class PlayerFunctionsScript : MonoBehaviour
             for (int i = 0; i < playerScript.getAvailableTargets().Count; i++)
             {
                 //swap target list
-                Target temp_target = playerScript.getAvailableTargets()[i];
+                Player_ID temp_target = playerScript.getAvailableTargets()[i];
                 int randomIndex_target = Random.Range(0, playerScript.getAvailableTargets().Count);
                 playerScript.getAvailableTargets()[i] = playerScript.getAvailableTargets()[randomIndex_target];
                 playerScript.getAvailableTargets()[randomIndex_target] = temp_target;
 
                 //swap player list
-                Target temp_player = playerScript.getAvailablePlayers()[i];
+                Player_ID temp_player = playerScript.getAvailablePlayers()[i];
                 int randomIndex_player = Random.Range(0, playerScript.getAvailablePlayers().Count);
                 playerScript.getAvailablePlayers()[i] = playerScript.getAvailablePlayers()[randomIndex_player];
                 playerScript.getAvailablePlayers()[randomIndex_player] = temp_player;

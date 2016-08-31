@@ -42,7 +42,7 @@ public class MarkerDistributionScript : MonoBehaviour
         }
 
         //populate the tool markers
-        for (int i = 0; i < (int)Target.MAX_NUM_OF_TARGETS; i++)
+        for (int i = 0; i < (int)Player_ID.MAX_NUM_OF_TARGETS; i++)
         {
             markerToTool[i] = (Tool)RandomWeighted();
         }

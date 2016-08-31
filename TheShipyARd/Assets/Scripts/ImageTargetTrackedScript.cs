@@ -208,7 +208,7 @@ namespace Vuforia
                 }
 
                 //tracked target is unknown again
-                playerScript.setTrackedTarget((int)Target.UNKNOWN);
+                playerScript.setTrackedTarget((int)Player_ID.UNKNOWN);
                 playerScript.setTrackedToolMarker(-1);
             }
         }

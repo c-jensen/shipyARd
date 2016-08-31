@@ -10,7 +10,7 @@ public class HudScript : MonoBehaviour
 
     PlayerScript playerScript = null;
 
-    public Button attackButton;
+    public Button interactButton;
     public Sprite buttonDown;
     public Sprite buttonUp;
 
@@ -21,11 +21,11 @@ public class HudScript : MonoBehaviour
         playerScript = player.GetComponent<PlayerScript>();
     }
 
-    public void attackButtonClicked()
+    public void interactButtonClicked()
     {
 
         //change button image to the button down version
-        attackButton.image.sprite = buttonDown;
+        interactButton.image.sprite = buttonDown;
 
         //just a safety call, in case start was not executed yet
         if (playerScript == null)
@@ -35,13 +35,13 @@ public class HudScript : MonoBehaviour
         }
 
         //call the interaction method in player functions
-        playerScript.playerFunctions.attack();
+        playerScript.playerFunctions.interact();
 
     }
 
     public void attackButtonReleased()
     {
         //if button is released, change image again to the button up version
-        attackButton.image.sprite = buttonUp;
+        interactButton.image.sprite = buttonUp;
     }
 }

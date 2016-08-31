@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 //Enum with player ids
-public enum Target
+public enum Player_ID
 {
     TARGET_0,
     TARGET_1,
@@ -24,16 +24,16 @@ public enum Target
 public class PlayerScript : MonoBehaviour {
 
     //List containing all unused targets
-    public static List<Target> availableTargets = new List<Target>();
+    public static List<Player_ID> availableTargets = new List<Player_ID>();
     
     //List containing all unused player IDs
-    public static List<Target> availablePlayers = new List<Target>();
+    public static List<Player_ID> availablePlayers = new List<Player_ID>();
     
     //List containing all players not arrested
-    public static List<Target> activePlayers = new List<Target>();
+    public static List<Player_ID> activePlayers = new List<Player_ID>();
     
     //List containing all players targets not arrested
-    public static List<Target> activePlayersTargets = new List<Target>();
+    public static List<Player_ID> activePlayersTargets = new List<Player_ID>();
 
     //List for the scores of the players sorted by player id
     private List<int> playerScores;
@@ -43,7 +43,7 @@ public class PlayerScript : MonoBehaviour {
     public PlayerFunctionsScript playerFunctions;
     public HighscoreScript highscoreScript;
     public PlayerToolScript playerTool;
-    public HealthSliderScript GUIHealthSlider;
+    public JailSliderScript GUIJailSlider;
     public ScoreScript GUIScoreText;
     public TargetScript targetImage;
     public ToolScript toolImage;
@@ -87,18 +87,18 @@ public class PlayerScript : MonoBehaviour {
     public static int markerID;
 
     //Health and score of current player
-    public float health = 100f;
+    public float jailSliderValue = 100f;
     public int score = 0;
-    public bool playerDead = false;
+    public bool playerArrested = false;
 
     //Target of the current player
-    public Target targetPlayer = Target.UNKNOWN;
+    public Player_ID targetPlayer = Player_ID.UNKNOWN;
 
     //id of current player
-    public Target playerID = Target.UNKNOWN;
+    public Player_ID playerID = Player_ID.UNKNOWN;
 
     //Target currently tracked (set to Target.UNKNOWN if nothing is tracked)
-    public Target trackedTarget;
+    public Player_ID trackedTarget;
     public int trackedToolMarker;
 
     public GameObject planePlayer;
@@ -124,7 +124,7 @@ public class PlayerScript : MonoBehaviour {
         playerTool = new PlayerToolScript(Tool.NONE);
 
         //set TrackedTarget and Tracked Tool to unknown and -1
-        trackedTarget = Target.UNKNOWN;
+        trackedTarget = Player_ID.UNKNOWN;
         trackedToolMarker = -1;
 
     }
@@ -152,8 +152,8 @@ public class PlayerScript : MonoBehaviour {
         GUIScoreText = scoreText.GetComponent<ScoreScript>();
 
         //create health slider
-        GameObject healthSlider = GameObject.Find("HealthSlider");
-        GUIHealthSlider = healthSlider.GetComponent<HealthSliderScript>();
+        GameObject jailSlider = GameObject.Find("JailSlider");
+        GUIJailSlider = jailSlider.GetComponent<JailSliderScript>();
 
         //Create defeated HUD
         defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
@@ -290,7 +290,7 @@ public class PlayerScript : MonoBehaviour {
     //Set tracked target to active marker
     public void setTrackedTarget(int trackedEnemy)
     {
-        trackedTarget = (Target)trackedEnemy;
+        trackedTarget = (Player_ID)trackedEnemy;
     }
 
     //Set tracked tool to active marker
@@ -300,13 +300,13 @@ public class PlayerScript : MonoBehaviour {
     }
 
     //return the remaining target IDs list (master)
-    public List<Target> getAvailableTargets()
+    public List<Player_ID> getAvailableTargets()
     {
         return availableTargets;
     }
 
     //return the remaining player IDs list (master)
-    public List<Target> getAvailablePlayers()
+    public List<Player_ID> getAvailablePlayers()
     {
         return availablePlayers;
     }
@@ -319,7 +319,7 @@ public class PlayerScript : MonoBehaviour {
 
     //Master checks if the game is finished
     //His player ID is the playerID of the last player that has been arrested
-    public void checkIfGameFinished(Target hisPlayerID)
+    public void checkIfGameFinished(Player_ID hisPlayerID)
     {
         //loop over all active players
         //Remove lastly arrested player from active player list
@@ -343,7 +343,7 @@ public class PlayerScript : MonoBehaviour {
             if (activePlayersTargets[i] == hisPlayerID)
             {
                 //set this players target to unknown
-                activePlayersTargets[i] = Target.UNKNOWN;
+                activePlayersTargets[i] = Player_ID.UNKNOWN;
             }
         }
 
@@ -355,7 +355,7 @@ public class PlayerScript : MonoBehaviour {
         {
             //check if at least one Target is not unknown yet
             //in this case the variable gameFinished will get false and can never be true again
-            gameFinished &= (activePlayersTargets[i] == Target.UNKNOWN);
+            gameFinished &= (activePlayersTargets[i] == Player_ID.UNKNOWN);
         }
 
         //if game finished and not stopped yet
@@ -421,7 +421,7 @@ public class PlayerScript : MonoBehaviour {
     public void rpc_gameIsOver()
     {
         //Deactivate HUD canvas if not arrested
-        if (!playerDead)
+        if (!playerArrested)
         {
             GameObject HUDCanvas = GameObject.Find("HUDCanvasGUI");
             HUDCanvas.SetActive(false);
@@ -528,7 +528,7 @@ public class PlayerScript : MonoBehaviour {
     public void rpc_receiveTarget(int target, PhotonMessageInfo info)
     {
         //player saves his own target
-        targetPlayer = (Target)target;
+        targetPlayer = (Player_ID)target;
 
         //and sets the right face to the target image in the HUD
         targetImage.setImage("Players/player_" + target.ToString());
@@ -539,7 +539,7 @@ public class PlayerScript : MonoBehaviour {
     public void rpc_receivePlayer(int player, PhotonMessageInfo info)
     {
         //player saves his own playerID
-        playerID = (Target)player;
+        playerID = (Player_ID)player;
     }
 
     //This tool is received every time, a user picks up a tool
@@ -588,8 +588,8 @@ public class PlayerScript : MonoBehaviour {
             markerDistribution.setMarkerToPhotonID(marker, id);
 
             //add the requesting player to the active players of the game
-            activePlayers.Add((Target)clientPlayer);
-            activePlayersTargets.Add((Target)clientTarget);
+            activePlayers.Add((Player_ID)clientPlayer);
+            activePlayersTargets.Add((Player_ID)clientTarget);
 
             //send the player and target ID to the requesting player, so that he can save them
             player.GetComponent<PhotonView>().RPC("rpc_receiveTarget", PhotonPlayer.Find(id), clientTarget);
@@ -618,30 +618,30 @@ public class PlayerScript : MonoBehaviour {
 
     //This RPC is send by a player, when he tries to arrest the player
     [PunRPC]
-    public void rpc_takeDamage(int attackerID, float amount)
+    public void rpc_continueArresting(int attackerID, float amount)
     {
         //only if player is not arrested yet
-        if (!playerDead)
+        if (!playerArrested)
         {
             //Set hit HUD visible
             onHitColor.a = 1.0f;
             onHitHUD.color = onHitColor;
 
             //Reduce arrested bar
-            health -= amount;
-            GUIHealthSlider.updateValue(health);
+            jailSliderValue -= amount;
+            GUIJailSlider.updateValue(jailSliderValue);
 
             //If arrested bar is smaller than zero, call player arrested method
-            if (health <= 0)
+            if (jailSliderValue <= 0)
             {
-                playerFunctions.playerDying(attackerID);
+                playerFunctions.playerBeingArrested(attackerID);
             }
         }
     }
 
     //This RPC is send to all players informing them, that a player has been arrested
     [PunRPC]
-    public void rpc_playerDied(int markerID, int attackerID, int hisTargetID)
+    public void rpc_playerWasArrested(int markerID, int attackerID, int hisTargetID)
     {
         //Get plane on the marker of the newly arrested player
         planePlayer = GameObject.Find("player_" + markerID);
@@ -745,7 +745,7 @@ public class PlayerScript : MonoBehaviour {
         //If this is the master client, he will check if the game is finished
         if (PhotonNetwork.isMasterClient == true)
         {
-            checkIfGameFinished((Target)hisPlayerID);
+            checkIfGameFinished((Player_ID)hisPlayerID);
         }
     }
 }
