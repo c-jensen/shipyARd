@@ -618,7 +618,7 @@ public class PlayerScript : MonoBehaviour {
 
     //This RPC is send by a player, when he tries to arrest the player
     [PunRPC]
-    public void rpc_continueArresting(int attackerID, float amount)
+    public void rpc_continueArresting(int arresterID, float amount)
     {
         //only if player is not arrested yet
         if (!playerArrested)
@@ -634,14 +634,14 @@ public class PlayerScript : MonoBehaviour {
             //If arrested bar is smaller than zero, call player arrested method
             if (jailSliderValue <= 0)
             {
-                playerFunctions.playerBeingArrested(attackerID);
+                playerFunctions.playerBeingArrested(arresterID);
             }
         }
     }
 
     //This RPC is send to all players informing them, that a player has been arrested
     [PunRPC]
-    public void rpc_playerWasArrested(int markerID, int attackerID, int hisTargetID)
+    public void rpc_playerWasArrested(int markerID, int arresterID, int hisTargetID)
     {
         //Get plane on the marker of the newly arrested player
         planePlayer = GameObject.Find("player_" + markerID);
@@ -656,7 +656,7 @@ public class PlayerScript : MonoBehaviour {
         if (markerDistribution.getMarkerToPlayer(markerID) == (int)targetPlayer)
         {
             //If arrested player was our own target and arrested by us
-            if ((int)playerID == attackerID)
+            if ((int)playerID == arresterID)
             {
                 //Exchange face texture with the same face in jail with success sign
                 targetImage.setImage("Players/success_arrested_player_" + hisPlayerID.ToString());
@@ -691,8 +691,8 @@ public class PlayerScript : MonoBehaviour {
             }
         }
 
-        //If we were the attacker
-        else if ((int)playerID == attackerID)
+        //If we were the arrester
+        else if ((int)playerID == arresterID)
         {
             //If arrested player was our pursuer
             if (hisTargetID == (int)playerID)
@@ -724,7 +724,7 @@ public class PlayerScript : MonoBehaviour {
                 infoTextHUD.color = infoTextColor;
             }        
         }
-        //If we were not the attacker
+        //If we were not the arrester
         else
         {
             //just use neutral texture on the players marker

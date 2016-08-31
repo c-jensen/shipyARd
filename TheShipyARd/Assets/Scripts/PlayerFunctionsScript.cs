@@ -45,13 +45,13 @@ public class PlayerFunctionsScript : MonoBehaviour
         }
     }
 
-    public void playerBeingArrested(int attackerID)
+    public void playerBeingArrested(int arresterID)
     {
         //player was arrested
         playerScript.playerArrested = true;
 
         //inform all other players, that the current player was arrested
-        playerScript.player.GetComponent<PhotonView>().RPC("rpc_playerWasArrested", PhotonTargets.Others, playerScript.getMarkerID(), attackerID, (int)playerScript.targetPlayer);
+        playerScript.player.GetComponent<PhotonView>().RPC("rpc_playerWasArrested", PhotonTargets.Others, playerScript.getMarkerID(), arresterID, (int)playerScript.targetPlayer);
 
         //change the HUD of the player to the jail hud
         GameObject hudCanvasGUI_gameObject = GameObject.Find("HUDCanvasGUI");

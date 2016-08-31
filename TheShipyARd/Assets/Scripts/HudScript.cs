@@ -39,7 +39,7 @@ public class HudScript : MonoBehaviour
 
     }
 
-    public void attackButtonReleased()
+    public void interactButtonReleased()
     {
         //if button is released, change image again to the button up version
         interactButton.image.sprite = buttonUp;
