@@ -47,6 +47,8 @@ public class PlayerScript : MonoBehaviour {
     public ScoreScript GUIScoreText;
     public TargetScript targetImage;
     public ToolScript toolImage;
+    public PlayerIDScript playerIDScript;
+    public PlayerIDScript HighscorePlayerIDScript;
 
     //Sprites for the differnt player faces
     public Sprite playerImage0;
@@ -70,6 +72,7 @@ public class PlayerScript : MonoBehaviour {
     public GameObject defeatedHUD;
     public GameObject gameFinishedHUD;
     public GameObject highscoreHUD;
+    public GameObject playAgainHUD;
 
     public Image onHitHUD;
     public Text infoTextHUD;
@@ -86,10 +89,11 @@ public class PlayerScript : MonoBehaviour {
     //MarkerID of current player
     public static int markerID;
 
-    //Health and score of current player
+    //Health and score and id of current player
     public float jailSliderValue = 100f;
     public int score = 0;
     public bool playerArrested = false;
+    public bool playerIDReceived = false;
 
     //Target of the current player
     public Player_ID targetPlayer = Player_ID.UNKNOWN;
@@ -151,6 +155,14 @@ public class PlayerScript : MonoBehaviour {
         GameObject scoreText = GameObject.Find("ScoreNumberGUI");
         GUIScoreText = scoreText.GetComponent<ScoreScript>();
 
+        //create playerID text
+        GameObject playerIDText = GameObject.Find("PlayerIDNumberGUI");
+        playerIDScript = playerIDText.GetComponent<PlayerIDScript>();
+
+        //create playerID text at highscore screen
+        GameObject highscorePlayerIDText = GameObject.Find("PlayerIDNumberHighscoreGUI");
+        HighscorePlayerIDScript = highscorePlayerIDText.GetComponent<PlayerIDScript>();
+
         //create health slider
         GameObject jailSlider = GameObject.Find("JailSlider");
         GUIJailSlider = jailSlider.GetComponent<JailSliderScript>();
@@ -158,6 +170,9 @@ public class PlayerScript : MonoBehaviour {
         //Create defeated HUD
         defeatedHUD = GameObject.Find("HUDCanvasDefeatedGUI");
         defeatedHUD.SetActive(false);
+
+        GameObject highscoreScriptObject = GameObject.Find("HighscoreScriptObject");
+        highscoreScript = highscoreScriptObject.GetComponent<HighscoreScript>();
         
         //create game finished hud
         gameFinishedHUD = GameObject.Find("HUDGameIsFinished");
@@ -166,7 +181,11 @@ public class PlayerScript : MonoBehaviour {
         gameFinishedText = GameObject.Find("GameFinishedText").GetComponent<Text>();
         gameFinishedTextColor = gameFinishedText.color;
         gameFinishedHUD.SetActive(false);
-        
+
+        //Initialize the play again button and deactivate it
+        playAgainHUD = GameObject.Find("PlayAgainButtonGUI");
+        playAgainHUD.SetActive(false);
+
         //Create highscore HUD
         highscoreHUD = GameObject.Find("HUDHighscore");      
         highscoreHUD.SetActive(false);
@@ -255,11 +274,11 @@ public class PlayerScript : MonoBehaviour {
             onHitHUD.color = onHitColor;
         }
 
-        //Face out info text at the top of the hud
+        //Fade out info text at the top of the hud
         //If info text occurs, the alpha value will be set to 1 again
         if (infoTextColor.a > 0.0f)
         {
-            infoTextColor.a -= 0.0075f;
+            infoTextColor.a -= 0.005f;
             infoTextHUD.color = infoTextColor;
         }
 
@@ -284,6 +303,12 @@ public class PlayerScript : MonoBehaviour {
                     gameFinishedBackground.color = gameFinishedBackgroundColor;
                 }
             }
+        }
+
+        if(playerID != Player_ID.UNKNOWN && !playerIDReceived)
+        {
+            playerIDScript.postPlayerID((int)playerID);
+            playerIDReceived = true;
         }
     }  
 
@@ -406,6 +431,15 @@ public class PlayerScript : MonoBehaviour {
 
         //sort score list
         highscoreScript.sort();
+
+        //show playerID in highscore screen
+        HighscorePlayerIDScript.postPlayerID((int)playerID);
+
+        //if player is master, then give him the option to restart the game
+        if (PhotonNetwork.isMasterClient == true)
+        {
+            playAgainHUD.SetActive(true);
+        }
     }
 
     //RPC received by all players to update the score of the sending player
@@ -523,7 +557,7 @@ public class PlayerScript : MonoBehaviour {
             planeTool.GetComponent<Renderer>().material.mainTexture = toolImageRope.texture;
     }
 
-    //This call is send from master to each player respectively and contains the players targetID
+    //This call is sent from master to each player respectively and contains the players targetID
     [PunRPC]
     public void rpc_receiveTarget(int target, PhotonMessageInfo info)
     {
@@ -534,7 +568,7 @@ public class PlayerScript : MonoBehaviour {
         targetImage.setImage("Players/player_" + target.ToString());
     }
 
-    //This call is send from master to each player respectively and contains the players playerID
+    //This call is sent from master to each player respectively and contains the players playerID
     [PunRPC]
     public void rpc_receivePlayer(int player, PhotonMessageInfo info)
     {
@@ -616,7 +650,7 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    //This RPC is send by a player, when he tries to arrest the player
+    //This RPC is sent by a player, when he tries to arrest the player
     [PunRPC]
     public void rpc_continueArresting(int arresterID, float amount)
     {
@@ -639,7 +673,7 @@ public class PlayerScript : MonoBehaviour {
         }
     }
 
-    //This RPC is send to all players informing them, that a player has been arrested
+    //This RPC is sent to all players informing them, that a player has been arrested
     [PunRPC]
     public void rpc_playerWasArrested(int markerID, int arresterID, int hisTargetID)
     {
@@ -747,5 +781,12 @@ public class PlayerScript : MonoBehaviour {
         {
             checkIfGameFinished((Player_ID)hisPlayerID);
         }
+    }
+
+    //This RPC is used to restart the game for all clients
+    [PunRPC]
+    public void rpc_restartGame()
+    {
+        Application.LoadLevel(2);
     }
 }

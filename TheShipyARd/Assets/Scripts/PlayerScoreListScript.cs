@@ -20,7 +20,7 @@ public class PlayerScoreListScript : MonoBehaviour {
     //creates the leaderboard
     public void initScoreList()
     {
-        highscoreScript = GameObject.Find("GameSceneScripts").GetComponent<HighscoreScript>();
+        highscoreScript = GameObject.Find("HighscoreScriptObject").GetComponent<HighscoreScript>();
 
         //loop over sorted highscore list
         for (int i = 0; i < highscoreScript.sortedHighscores.Count; i++)

@@ -42,6 +42,13 @@ public class PlayerFunctionsScript : MonoBehaviour
                 playerScript.playerTool = tmp;
                 playerScript.toolImage.setImage((int)playerScript.playerTool.getToolType());
             }
+            else if(playerScript.playerTool.getToolType() == Tool.NONE)
+            {
+                //Create info text at the top of the screen
+                playerScript.infoTextHUD.text = "You have no tool equipped!";
+                playerScript.infoTextColor.a = 1.0f;
+                playerScript.infoTextHUD.color = playerScript.infoTextColor;
+            }
         }
     }
 

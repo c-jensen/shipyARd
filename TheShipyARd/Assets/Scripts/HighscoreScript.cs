@@ -16,6 +16,12 @@ public class HighscoreScript : MonoBehaviour {
     public List<int> sortedPlayerIDs;
     public List<int> sortedHighscores;
 
+    // This method prevents the Game Object from beeing destroyed, if the scene is changed
+    void Awake()
+    {
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Use this for initialization
     void Start () {
         highscores          = new List<int>();
