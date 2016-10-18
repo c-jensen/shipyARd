@@ -6,8 +6,7 @@ TODO: Optional:
 	Wenn 2 spieler gleichzeitig das gleiche tool aufheben -> sicherheitsabfrage über master rpccall
 	Direkt bei Start Blick auf Marker setzt das Target nicht (Lösung: Updatemethode die Target setzt solange getracked ist)
 	The Game is Finished Screen -> unten und oben ebenfalls ganz schwarzen Rahmen (und nicht einfaden lassen), damit man das Logo links unten nicht sieht
-	Marker umbennen -> es sollte nicht player sondern einfach nur "MarkerID 0...n" darauf stehen (Ansonsten Verwirrung bei score board)
-
+	
 		Future Work:
 			Guards im Raum (GPS oder extra player in der Runde...)
 			Auswahl Menü Host oder Client und richtige Lobby
@@ -18,12 +17,18 @@ TODO: Optional:
 
 * * * 18.10.2016 * * *
 
+Heute:
+	Letzte Bugfixes
+	Leaderboard bug behoben, dass die wechselnde PlayerID durchgängig hochgezählt wurde bei mehreren Spielen
+	Nach aussen wird jetzt nur noch die MarkerID verwendet und angezeigt
+
 In den Ferien erledigt:
 	Master bekommt ReplayButton
 	PlayerID in HUD anzeigen
 	Info Schrift Zeit länger machen
 	Neue Marker ausdrucken
 	Variablen umbennen
+	Bei Angriff ohne Tool -> Log
 
 * * * 31.08.2016 * * *
 

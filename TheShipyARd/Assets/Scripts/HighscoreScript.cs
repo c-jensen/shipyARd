@@ -9,11 +9,11 @@ public class HighscoreScript : MonoBehaviour {
     public bool firstRound;
     
     //lists sorted by player id
-    public List<int> playerIDs;
+    public List<int> markerIDs;
     public List<int> highscores;
 
     //list sorted by highest score
-    public List<int> sortedPlayerIDs;
+    public List<int> sortedMarkerIDs;
     public List<int> sortedHighscores;
 
     // This method prevents the Game Object from beeing destroyed, if the scene is changed
@@ -26,8 +26,8 @@ public class HighscoreScript : MonoBehaviour {
     void Start () {
         highscores          = new List<int>();
         sortedHighscores    = new List<int>();
-        playerIDs           = new List<int>();
-        sortedPlayerIDs     = new List<int>();
+        markerIDs = new List<int>();
+        sortedMarkerIDs = new List<int>();
 
         firstRound = true;
     }
@@ -37,12 +37,12 @@ public class HighscoreScript : MonoBehaviour {
     {
         //init sorted lists with current player and scores first sorted by player ID
         sortedHighscores.Clear();
-        sortedPlayerIDs.Clear();
+        sortedMarkerIDs.Clear();
 
         for (int i = 0; i < highscores.Count; i++)
         {
             sortedHighscores.Add(highscores[i]);
-            sortedPlayerIDs.Add(playerIDs[i]);
+            sortedMarkerIDs.Add(markerIDs[i]);
         }
 
         int tmpScore;
@@ -64,11 +64,11 @@ public class HighscoreScript : MonoBehaviour {
 
             //switch first with highest index
             tmpScore = sortedHighscores[i];
-            tmpPlayerID = sortedPlayerIDs[i];
+            tmpPlayerID = sortedMarkerIDs[i];
             sortedHighscores[i] = sortedHighscores[highestIndex];
             sortedHighscores[highestIndex] = tmpScore;
-            sortedPlayerIDs[i] = sortedPlayerIDs[highestIndex];
-            sortedPlayerIDs[highestIndex] = tmpPlayerID;
+            sortedMarkerIDs[i] = sortedMarkerIDs[highestIndex];
+            sortedMarkerIDs[highestIndex] = tmpPlayerID;
         }
 
         PlayerScoreListScript playerScoreListScript = GameObject.Find("PlayerScoreTable").GetComponent<PlayerScoreListScript>();

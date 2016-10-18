@@ -307,7 +307,7 @@ public class PlayerScript : MonoBehaviour {
 
         if(playerID != Player_ID.UNKNOWN && !playerIDReceived)
         {
-            playerIDScript.postPlayerID((int)playerID);
+            playerIDScript.postPlayerID((int)markerID + 1);
             playerIDReceived = true;
         }
     }  
@@ -412,11 +412,11 @@ public class PlayerScript : MonoBehaviour {
             for (int i = 0; i < playerScores.Count; i++)
             {
                 highscoreScript.highscores.Add(playerScores[i]);
-                highscoreScript.playerIDs.Add(i);
+                highscoreScript.markerIDs.Add(i);
             }
         }
 
-        //otherwise the score of the last round will be incremetned with the current score
+        //otherwise the score of the last round will be incremented with the current score
         else
         {
             for (int i = 0; i < playerScores.Count; i++)
@@ -433,7 +433,7 @@ public class PlayerScript : MonoBehaviour {
         highscoreScript.sort();
 
         //show playerID in highscore screen
-        HighscorePlayerIDScript.postPlayerID((int)playerID);
+        HighscorePlayerIDScript.postPlayerID((int)markerID + 1);
 
         //if player is master, then give him the option to restart the game
         if (PhotonNetwork.isMasterClient == true)
@@ -445,9 +445,9 @@ public class PlayerScript : MonoBehaviour {
     //RPC received by all players to update the score of the sending player
     //Send everytime the score of a player gets updated
     [PunRPC]
-    public void rpc_updatePlayerScore(int playerID, int score)
+    public void rpc_updatePlayerScore(int marker_id, int score)
     {
-        playerScores[playerID] = score;
+        playerScores[marker_id] = score;
     }
 
     //RPC received by all players, if the master detects, that the game is finished
@@ -471,7 +471,7 @@ public class PlayerScript : MonoBehaviour {
         gameFinishedHUD.SetActive(true);
 
         //RPCs to tell everyone the final score since game is finished now
-        player.GetComponent<PhotonView>().RPC("rpc_updatePlayerScore", PhotonTargets.All, (int)playerID, score);
+        player.GetComponent<PhotonView>().RPC("rpc_updatePlayerScore", PhotonTargets.All, (int)markerID, score);
         
         //Also tell the master that the player score is updated now
         player.GetComponent<PhotonView>().RPC("rpc_incrementScoreRefreshed", PhotonTargets.MasterClient);

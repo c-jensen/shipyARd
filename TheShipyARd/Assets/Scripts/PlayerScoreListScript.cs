@@ -28,7 +28,8 @@ public class PlayerScoreListScript : MonoBehaviour {
             //create one line in the table for each player
             GameObject playerScoreEntry_go = Instantiate(playerScoreEntryPrefab);
             playerScoreEntry_go.transform.SetParent(this.transform);
-            playerScoreEntry_go.transform.Find("PlayerIDText").GetComponent<Text>().text = "Player " + highscoreScript.sortedPlayerIDs[i].ToString();
+            int cast_markerID = highscoreScript.sortedMarkerIDs[i] + 1;
+            playerScoreEntry_go.transform.Find("PlayerIDText").GetComponent<Text>().text = "Player " + cast_markerID.ToString();
             playerScoreEntry_go.transform.Find("PlayerScoreText").GetComponent<Text>().text = highscoreScript.sortedHighscores[i].ToString();
         }
     }
