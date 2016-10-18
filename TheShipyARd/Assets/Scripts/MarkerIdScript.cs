@@ -20,11 +20,12 @@ public class MarkerIdScript : MonoBehaviour
         {
 
             //change min value of slider to 0, so that player cant take any value below 0 anymore
-            slider.minValue = 0;
+            slider.minValue = 1;
 
             //Change marker ID in text box next to slider
-            PlayerScript.markerID = (int)slider.value;
-            textBox.text = PlayerScript.markerID.ToString();
+            int finalMarkerID = (int)slider.value;
+            PlayerScript.markerID = finalMarkerID - 1;
+            textBox.text = finalMarkerID.ToString();
 
             //change new game button to be interactable and to have the green new game font
             newGameButtonText.text = "New Game";

@@ -6,6 +6,7 @@ TODO: Optional:
 	Wenn 2 spieler gleichzeitig das gleiche tool aufheben -> sicherheitsabfrage über master rpccall
 	Direkt bei Start Blick auf Marker setzt das Target nicht (Lösung: Updatemethode die Target setzt solange getracked ist)
 	The Game is Finished Screen -> unten und oben ebenfalls ganz schwarzen Rahmen (und nicht einfaden lassen), damit man das Logo links unten nicht sieht
+	Marker umbennen -> es sollte nicht player sondern einfach nur "MarkerID 0...n" darauf stehen (Ansonsten Verwirrung bei score board)
 
 		Future Work:
 			Guards im Raum (GPS oder extra player in der Runde...)
@@ -15,11 +16,19 @@ TODO: Optional:
 			2D Personenbilder und Waffen durch animierte 3D Modelle ersetzen
 
 
+* * * 18.10.2016 * * *
+
+In den Ferien erledigt:
+	Master bekommt ReplayButton
+	PlayerID in HUD anzeigen
+	Info Schrift Zeit länger machen
+	Neue Marker ausdrucken
+	Variablen umbennen
+
 * * * 31.08.2016 * * *
 
 Next Steps:
 	Jan
-	Marker umbennen -> es sollte nicht player sondern einfach nur "MarkerID 0...n" darauf stehen (Ansonsten Verwirrung bei score board)
 	Neue Marker ausdrucken
  	Variablen umbennen
 
