@@ -1,14 +1,14 @@
 Anleitung:
-	
+
 	Installation Unity und Vuforia:
-	
+
 		Installation Android Studio http://developer.android.com/sdk/index.html
-	
+
 		Installation Unity https://unity3d.com/get-unity
 			WICHTIG!: Bei Installation "Android Build Support" Haken setzen
-		
+
 		Integration Vuforia: https://developer.vuforia.com/library/articles/Solution/Installing-the-Unity-Extension
-		
+
 		Set up Vuforia Projekt: https://developer.vuforia.com/library/articles/Solution/Compiling-a-Simple-Unity-Project
 			WICHTIG!: Im Tutorial fehlt vor dem Export ein Schritt:
 				In ARCamera Inspector unter Database Load Behaviour
@@ -16,16 +16,11 @@ Anleitung:
 					Darunter bei Activate Haken setzen
 
 				Beim ersten Start kann es nötig sein, den root-Ordner des Android sdks auszuwählen. In der regel ist das der Ordner "sdk" im Ordner "Android"
-					
-			Tutorial: https://www.youtube.com/watch?v=tFyN4AlYN6w
+
+		AR-Tutorial: https://www.youtube.com/watch?v=tFyN4AlYN6w
 
 
 		Installation Unity Photon Networking: https://www.photonengine.com/en/PUN
 			Download -> start in Unity Editor. Web browser opens -> click download and register account
-			
+
 		Vuforia User Defined Targets Tut: https://www.youtube.com/watch?v=VPbyh_TcDAY
-		
-		Extended Tracking: https://developer.vuforia.com/library/articles/Training/Extended-Tracking
-			Implementation: https://developer.vuforia.com/library/articles/Solution/How-To-implement-Extended-Tracking
-			
-		Unity UI Tutorial: https://unity3d.com/learn/tutorials/projects/survival-shooter/health-hud
