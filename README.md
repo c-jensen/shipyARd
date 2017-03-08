@@ -1,6 +1,12 @@
-The ShipyARd
+#The ShipyARd 
+###A real-life game with augmented reality components made with Unity 3D and the Vuforia SDK.
+######Created by Jan Beutgen and Christopher Jensen
 
-The Shipyard is a real-life game with augmented reality components.
 
-Visit this project's homepage for further information and material:
+
+Visit the project homepage for further information and material:
 <http://jan.a-beutgen.info/shipyard.html>
+
+Contact:
+jbeutgen@uni-koblenz.de
+chrisjensen@uni-koblenz.de
